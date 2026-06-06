@@ -1,10 +1,19 @@
 from __future__ import annotations
 
+import os
+import sys
 from pathlib import Path
 
 import numpy as np
 
-from finite_horizon import build_tiger, solve_finite_horizon
+os.environ.setdefault(
+    "MPLCONFIGDIR",
+    str(Path(__file__).resolve().parents[1] / ".matplotlib-cache"),
+)
+os.environ.setdefault("MPLBACKEND", "Agg")
+sys.path.append(os.path.dirname(__file__))
+
+from tiger_finite_horizon_demo import build_tiger, solve_finite_horizon
 
 
 def main() -> None:

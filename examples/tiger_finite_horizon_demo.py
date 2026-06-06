@@ -7,7 +7,7 @@ import numpy as np
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from pomdp_starter import TabularPOMDP, best_alpha, pretty_plan, solve_finite_horizon
+from finite_horizon_solver import TabularPOMDP, best_alpha, pretty_plan, solve_finite_horizon
 
 
 def build_tiger() -> TabularPOMDP:
