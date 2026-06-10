@@ -5,6 +5,7 @@ from itertools import product
 
 import numpy as np
 
+print("start")
 
 NUM_S1 = 2
 NUM_S2 = 2
@@ -12,27 +13,19 @@ NUM_STATES = NUM_S1 * NUM_S2
 NUM_ACTIONS = 2
 
 
-# The true game has four states:
-# (S1=0, S2=0), (S1=0, S2=1), (S1=1, S2=0), (S1=1, S2=1).
-# The victim sees S1, while S2 is hidden.
 @dataclass(frozen=True)
 class FactoredGame:
-    # transitions[a, state, next_state] = P(s' | s, a)
-    transitions: np.ndarray
-
-    # rewards[state, a] = R(s1, s2, a)
+    # rewards[state, action] = R(s1, s2, a)
     rewards: np.ndarray
-    discount: float
 
 
 @dataclass(frozen=True)
 class AttackerPolicy:
     # action_probs[s1, s2, a] = pi_dagger(a | s1, s2)
-    # Unlike the victim, the attacker may condition its behavior on hidden S2.
+    # The attacker observes both S1 and hidden S2.
     action_probs: np.ndarray
 
     def sample_action(self, state: int, rng: np.random.Generator):
-        # This is how pi_dagger generates one action for the training set.
         s1, s2 = split_state(state)
         return int(rng.choice(NUM_ACTIONS, p=self.action_probs[s1, s2]))
 
@@ -40,17 +33,22 @@ class AttackerPolicy:
         entries = []
         for s1, s2 in product(range(NUM_S1), range(NUM_S2)):
             p_a1 = self.action_probs[s1, s2, 1]
-            entries.append(f"({s1},{s2}):P(a1)={p_a1:.2f}")
+            entries.append(f"({s1},{s2}):P(a1)={p_a1:.6f}")
         return "  ".join(entries)
 
 
 @dataclass(frozen=True)
-class LearnedMDP:
-    # The victim treats observed S1 as the complete state.
-    # Therefore this estimated model has only two states, not the four true states.
-    transitions: np.ndarray
+class LearnedRewardModel:
+    # The victim only observes S1, so it estimates R_hat(s1, a).
     rewards: np.ndarray
-    discount: float
+    counts: np.ndarray
+
+
+@dataclass(frozen=True)
+class ExactFeasibilityResult:
+    feasible: bool
+    maximum_margin: float
+    attacker: AttackerPolicy | None
 
 
 def join_state(s1: int, s2: int):
@@ -62,32 +60,20 @@ def split_state(state: int):
 
 
 def build_random_game(seed: int):
-    # Fixing the seed gives us one concrete R and transition model to study.
+    # The seed produces one concrete, reproducible reward function R.
     rng = np.random.default_rng(seed)
-    transitions = random_stochastic_tensor(
-        rng, (NUM_ACTIONS, NUM_STATES, NUM_STATES), alpha=1.4
-    )
-
-    # The notes suggest starting with concrete, non-identical random rewards.
     rewards = np.round(rng.normal(0.0, 1.0, size=(NUM_STATES, NUM_ACTIONS)), 3)
+
+    # Resample only in the unlikely event that rounding creates duplicate entries.
     while len(np.unique(rewards)) != rewards.size:
         rewards = np.round(rng.normal(0.0, 1.0, size=(NUM_STATES, NUM_ACTIONS)), 3)
 
-    return FactoredGame(transitions=transitions, rewards=rewards, discount=0.9)
-
-
-def random_stochastic_tensor(
-    rng: np.random.Generator, shape: tuple[int, int, int], alpha: float
-):
-    rows = np.empty(shape)
-    for index in np.ndindex(shape[0], shape[1]):
-        rows[index] = rng.dirichlet(np.full(shape[2], alpha))
-    return rows
+    return FactoredGame(rewards=rewards)
 
 
 def attacker_policy_grid(grid: tuple[float, ...]):
-    # A candidate pi_dagger chooses a probability of a1 at each full state (S1, S2).
-    # With five grid values and four full states, this creates 5^4 = 625 policies.
+    # Each candidate chooses P(a1 | s1, s2) at all four complete states.
+    # Five probability choices at four states gives 5^4 = 625 policies.
     policies = []
     for p_a1_by_state in product(grid, repeat=NUM_STATES):
         action_probs = np.empty((NUM_S1, NUM_S2, NUM_ACTIONS))
@@ -99,118 +85,191 @@ def attacker_policy_grid(grid: tuple[float, ...]):
 
 
 def pure_target_policies():
-    # pi_star[s1] is the action selected from the victim's observation S1.
-    # With two S1 values and two actions, the four targets are:
-    # (a0,a0), (a0,a1), (a1,a0), and (a1,a1).
+    # pi_star[s1] is the action selected from observation S1.
     return list(product(range(NUM_ACTIONS), repeat=NUM_S1))
 
 
-def simulate_observed_dataset(
+def generate_single_period_dataset(
     game: FactoredGame,
     attacker: AttackerPolicy,
     *,
-    episodes: int,
-    steps: int,
-    initial_distribution: np.ndarray,
+    num_samples: int,
+    state_distribution: np.ndarray,
     rng: np.random.Generator,
 ):
-    # The attacker acts using (S1, S2), but hides S2 before giving data to the victim.
-    # Thus pi_dagger controls which hidden S2 values are associated with each action.
+    # Every sample is an independent one-period interaction.
+    # The attacker sees (S1,S2), but the victim receives only (S1, action, reward).
     data = []
-    for _ in range(episodes):
-        state = int(rng.choice(NUM_STATES, p=initial_distribution))
-        for _ in range(steps):
-            s1, _ = split_state(state)
-            action = attacker.sample_action(state, rng)
-            reward = float(game.rewards[state, action])
-            next_state = int(rng.choice(NUM_STATES, p=game.transitions[action, state]))
-            next_s1, _ = split_state(next_state)
-
-            # This is the complete training example visible to the victim.
-            data.append((s1, action, reward, next_s1))
-            state = next_state
+    for _ in range(num_samples):
+        state = int(rng.choice(NUM_STATES, p=state_distribution))
+        s1, _ = split_state(state)
+        action = attacker.sample_action(state, rng)
+        reward = float(game.rewards[state, action])
+        data.append((s1, action, reward))
     return data
 
 
-def fit_observed_mle(
-    data: list[tuple[int, int, float, int]],
-    *,
-    discount: float,
-    transition_prior: float = 0.5,
-    reward_prior_count: float = 1.0,
-    reward_prior_mean: float = 0.0,
-):
-    # The victim pools samples that have the same observed S1 and action. Because S2
-    # is missing, rewards from different hidden states are averaged together.
-    transition_counts = np.full(
-        (NUM_ACTIONS, NUM_S1, NUM_S1), transition_prior, dtype=float
-    )
-    reward_sums = np.full(
-        (NUM_S1, NUM_ACTIONS), reward_prior_count * reward_prior_mean, dtype=float
-    )
-    reward_counts = np.full((NUM_S1, NUM_ACTIONS), reward_prior_count, dtype=float)
+def fit_reward_mle(data: list[tuple[int, int, float]]):
+    # MLE for deterministic rewards is the sample mean for each observed (S1,a).
+    reward_sums = np.zeros((NUM_S1, NUM_ACTIONS))
+    reward_counts = np.zeros((NUM_S1, NUM_ACTIONS), dtype=int)
 
-    for s1, action, reward, next_s1 in data:
-        transition_counts[action, s1, next_s1] += 1.0
+    for s1, action, reward in data:
         reward_sums[s1, action] += reward
-        reward_counts[s1, action] += 1.0
+        reward_counts[s1, action] += 1
 
-    # These are the victim's MLE estimates after S2 has been hidden.
-    transitions = transition_counts / transition_counts.sum(axis=-1, keepdims=True)
+    # A candidate without examples for every (S1,a) cannot support a fair comparison.
+    if np.any(reward_counts == 0):
+        return None
+
     rewards = reward_sums / reward_counts
-    return LearnedMDP(transitions=transitions, rewards=rewards, discount=discount)
+    return LearnedRewardModel(rewards=rewards, counts=reward_counts)
 
 
-def solve_mdp(mdp: LearnedMDP, *, tolerance: float = 1e-12):
-    # Solve the victim's estimated two-state model with value iteration.
-    values = np.zeros(NUM_S1)
-    while True:
-        q_values = mdp.rewards.T + mdp.discount * np.einsum(
-            "asn,n->as", mdp.transitions, values
-        )
-        next_values = q_values.max(axis=0)
-        if np.max(np.abs(next_values - values)) <= tolerance:
-            values = next_values
-            break
-        values = next_values
-
-    q_values = mdp.rewards.T + mdp.discount * np.einsum(
-        "asn,n->as", mdp.transitions, values
-    )
-    policy = tuple(int(action) for action in np.argmax(q_values, axis=0))
-    return policy, values, q_values
+def solve_single_period(model: LearnedRewardModel):
+    # With one period, the victim simply selects the action with larger R_hat.
+    return tuple(int(action) for action in np.argmax(model.rewards, axis=1))
 
 
-def target_margin(target: tuple[int, int], q_values: np.ndarray):
-    # A positive margin means the target action strictly beats the other action
-    # at both values of S1. Larger margins mean the learned choice is more robust.
+def reward_margin(target: tuple[int, int], learned_rewards: np.ndarray):
+    # The minimum reward advantage of the target action across observed states.
     margins = []
-    for s1, chosen_action in enumerate(target):
-        other_action = 1 - chosen_action
-        margins.append(q_values[chosen_action, s1] - q_values[other_action, s1])
+    for s1, target_action in enumerate(target):
+        other_action = 1 - target_action
+        margins.append(
+            learned_rewards[s1, target_action] - learned_rewards[s1, other_action]
+        )
     return float(min(margins))
 
 
-def true_policy_value(
-    game: FactoredGame,
-    policy: tuple[int, int],
-    initial_distribution: np.ndarray,
-):
-    # This evaluates pi_star in the original four-state game. It is for comparison:
-    # the victim chooses pi_star using the learned model, not this true value.
-    policy_transition = np.empty((NUM_STATES, NUM_STATES))
-    policy_reward = np.empty(NUM_STATES)
-    for state in range(NUM_STATES):
-        s1, _ = split_state(state)
-        action = policy[s1]
-        policy_transition[state] = game.transitions[action, state]
-        policy_reward[state] = game.rewards[state, action]
-
-    values = np.linalg.solve(
-        np.eye(NUM_STATES) - game.discount * policy_transition,
-        policy_reward,
+def hidden_distribution(state_distribution: np.ndarray, s1: int):
+    state_probs = np.array(
+        [state_distribution[join_state(s1, s2)] for s2 in range(NUM_S2)]
     )
-    return float(initial_distribution @ values)
+    return state_probs / state_probs.sum()
+
+
+def learned_reward_gap(
+    rewards: np.ndarray,
+    hidden_probs: np.ndarray,
+    target_action: int,
+    target_action_probs: np.ndarray,
+):
+    # Infinite-data MLE reward difference induced by pi_dagger at one S1.
+    other_action = 1 - target_action
+    target_mass = hidden_probs @ target_action_probs
+    other_mass = hidden_probs @ (1.0 - target_action_probs)
+
+    if target_mass <= 0.0 or other_mass <= 0.0:
+        return None
+
+    target_reward = (
+        hidden_probs * target_action_probs * rewards[:, target_action]
+    ).sum() / target_mass
+    other_reward = (
+        hidden_probs * (1.0 - target_action_probs) * rewards[:, other_action]
+    ).sum() / other_mass
+    return float(target_reward - other_reward)
+
+
+def exact_state_feasibility(
+    rewards: np.ndarray,
+    hidden_probs: np.ndarray,
+    target_action: int,
+    tolerance: float = 1e-12,
+):
+    # Let u=P(S2=0 | target action), v=P(S2=0 | other action), and
+    # q=P(S2=0 | S1). Bayes plausibility requires q to lie between u and v.
+    # The reward gap is linear in (u,v), so its supremum occurs at a corner.
+    q = float(hidden_probs[0])
+    posterior_corners = [
+        (u, v) for u in (q, 1.0) for v in (0.0, q)
+    ] + [
+        (u, v) for u in (0.0, q) for v in (q, 1.0)
+    ]
+
+    other_action = 1 - target_action
+    target_rewards = rewards[:, target_action]
+    other_rewards = rewards[:, other_action]
+
+    def posterior_gap(u, v):
+        target_mean = u * target_rewards[0] + (1.0 - u) * target_rewards[1]
+        other_mean = v * other_rewards[0] + (1.0 - v) * other_rewards[1]
+        return float(target_mean - other_mean)
+
+    best_u, best_v = max(posterior_corners, key=lambda pair: posterior_gap(*pair))
+    maximum_margin = posterior_gap(best_u, best_v)
+
+    if maximum_margin <= tolerance:
+        return False, maximum_margin, None
+
+    if abs(best_u - best_v) <= tolerance:
+        return True, maximum_margin, np.full(NUM_S2, 0.5)
+
+    # A boundary optimum may give one action zero probability. Move slightly into
+    # the full-coverage region while retaining a positive teaching margin.
+    interior_offset = min(q, 1.0 - q) / 2.0
+    if best_u >= q >= best_v:
+        interior_u, interior_v = q + interior_offset, q - interior_offset
+    else:
+        interior_u, interior_v = q - interior_offset, q + interior_offset
+
+    for epsilon in (1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 5e-2, 1e-1):
+        u = (1.0 - epsilon) * best_u + epsilon * interior_u
+        v = (1.0 - epsilon) * best_v + epsilon * interior_v
+        target_frequency = (q - v) / (u - v)
+        target_action_probs = np.array(
+            [
+                target_frequency * u / hidden_probs[0],
+                target_frequency * (1.0 - u) / hidden_probs[1],
+            ]
+        )
+        target_action_probs = np.clip(target_action_probs, 0.0, 1.0)
+        margin = learned_reward_gap(
+            rewards, hidden_probs, target_action, target_action_probs
+        )
+        if margin is not None and margin > tolerance:
+            return True, maximum_margin, target_action_probs
+
+    raise RuntimeError("positive exact margin found, but witness construction failed")
+
+
+def exact_single_period_feasibility(
+    game: FactoredGame,
+    target: tuple[int, int],
+    state_distribution: np.ndarray,
+):
+    # The two observed values of S1 can be checked independently in one period.
+    action_probs = np.empty((NUM_S1, NUM_S2, NUM_ACTIONS))
+    state_margins = []
+
+    for s1, target_action in enumerate(target):
+        hidden_probs = hidden_distribution(state_distribution, s1)
+        rewards = np.array(
+            [game.rewards[join_state(s1, s2)] for s2 in range(NUM_S2)]
+        )
+        feasible, maximum_margin, target_probs = exact_state_feasibility(
+            rewards, hidden_probs, target_action
+        )
+        state_margins.append(maximum_margin)
+
+        if not feasible:
+            return ExactFeasibilityResult(
+                feasible=False,
+                maximum_margin=min(state_margins),
+                attacker=None,
+            )
+
+        for s2 in range(NUM_S2):
+            probability_of_target = target_probs[s2]
+            action_probs[s1, s2, target_action] = probability_of_target
+            action_probs[s1, s2, 1 - target_action] = 1.0 - probability_of_target
+
+    return ExactFeasibilityResult(
+        feasible=True,
+        maximum_margin=min(state_margins),
+        attacker=AttackerPolicy(action_probs=action_probs),
+    )
 
 
 def print_reward_table(game: FactoredGame):
@@ -218,84 +277,105 @@ def print_reward_table(game: FactoredGame):
     print("s1  s2       a0       a1")
     for state in range(NUM_STATES):
         s1, s2 = split_state(state)
-        print(f" {s1}   {s2}   {game.rewards[state, 0]:>7.3f}  {game.rewards[state, 1]:>7.3f}")
+        print(
+            f" {s1}   {s2}   "
+            f"{game.rewards[state, 0]:>7.3f}  {game.rewards[state, 1]:>7.3f}"
+        )
 
 
 def main():
-    # Experiment settings. Change these values directly and rerun the file.
-    seed = 7
-    episodes = 100
-    steps = 20
+    seed = 0
+    num_samples = 10_000
     simulation_seed = 10_007
     attacker_probability_grid = (0.0, 0.25, 0.5, 0.75, 1.0)
 
     game = build_random_game(seed)
-    initial_distribution = np.full(NUM_STATES, 1.0 / NUM_STATES)
+    state_distribution = np.full(NUM_STATES, 1.0 / NUM_STATES)
     attackers = attacker_policy_grid(attacker_probability_grid)
     targets = pure_target_policies()
 
-    # For each teachable pi_star, store the strongest pi_dagger found for it.
-    witnesses: dict[tuple[int, int], tuple[AttackerPolicy, float, LearnedMDP]] = {}
+    # The heuristic stores the strongest finite-sample witness for each pi_star.
+    witnesses: dict[
+        tuple[int, int],
+        tuple[AttackerPolicy, float, LearnedRewardModel],
+    ] = {}
+    skipped_for_missing_coverage = 0
 
-    # Generate a separate training set under every candidate pi_dagger.
     for attacker_index, attacker in enumerate(attackers):
         rng = np.random.default_rng(simulation_seed + attacker_index)
-        data = simulate_observed_dataset(
+        data = generate_single_period_dataset(
             game,
             attacker,
-            episodes=episodes,
-            steps=steps,
-            initial_distribution=initial_distribution,
+            num_samples=num_samples,
+            state_distribution=state_distribution,
             rng=rng,
         )
-        learned_mdp = fit_observed_mle(data, discount=game.discount)
-        learned_policy, _, q_values = solve_mdp(learned_mdp)
-        margin = target_margin(learned_policy, q_values)
+        learned_model = fit_reward_mle(data)
+        if learned_model is None:
+            skipped_for_missing_coverage += 1
+            continue
 
-        # The attacker is a witness for whichever policy the victim learns.
-        # Keep the witness with the largest positive optimality margin.
+        learned_policy = solve_single_period(learned_model)
+        margin = reward_margin(learned_policy, learned_model.rewards)
         existing = witnesses.get(learned_policy)
         if existing is None or margin > existing[1]:
-            witnesses[learned_policy] = (attacker, margin, learned_mdp)
+            witnesses[learned_policy] = (attacker, margin, learned_model)
+
+    exact_results = {
+        target: exact_single_period_feasibility(game, target, state_distribution)
+        for target in targets
+    }
 
     print_reward_table(game)
     print()
-    print("Information structure")
+    print("Single-period information structure")
+    print(f"  random reward seed: {seed}")
     print("  victim pi_star observes: S1")
     print("  attacker pi_dagger observes: (S1, S2)")
-    print("  victim training tuple: (S1, action, reward, next_S1)")
+    print("  victim training tuple: (S1, action, reward)")
     print(f"  pi_dagger policies searched: {len(attackers)}")
-    print(f"  samples per pi_dagger: {episodes * steps}")
+    print(f"  independent samples per pi_dagger: {num_samples}")
+    print(f"  skipped for missing action coverage: {skipped_for_missing_coverage}")
     print()
     print("Target-policy teachability")
-    print("pi_star          true value    teachable    best learned margin")
+    print("pi_star          sampled search    exact result    exact max margin")
 
     for target in targets:
-        true_value = true_policy_value(game, target, initial_distribution)
-        witness = witnesses.get(target)
-        teachable = "yes" if witness is not None else "not found"
-        margin = f"{witness[1]:.4f}" if witness is not None else "-"
-        print(f"{target!s:<16} {true_value:>10.4f}    {teachable:<10}   {margin}")
+        sampled_result = "witness found" if target in witnesses else "not found"
+        exact = exact_results[target]
+        exact_label = "feasible" if exact.feasible else "IMPOSSIBLE"
+        print(
+            f"{target!s:<16} {sampled_result:<17} "
+            f"{exact_label:<15} {exact.maximum_margin:>8.4f}"
+        )
 
     for target in targets:
         witness = witnesses.get(target)
         if witness is None:
             continue
-        attacker, margin, learned_mdp = witness
+        attacker, margin, learned_model = witness
         print()
-        print(f"Witness for pi_star={target}")
+        print(f"Finite-sample witness for pi_star={target}")
         print(f"  pi_dagger: {attacker.label()}")
-        print(f"  optimality margin in learned model: {margin:.4f}")
+        print(f"  learned reward margin: {margin:.4f}")
         print("  learned R_hat(s1, a):")
-        print(np.round(learned_mdp.rewards, 3))
-        print("  learned P_hat(a, s1, next_s1):")
-        print(np.round(learned_mdp.transitions, 3))
+        print(np.round(learned_model.rewards, 3))
+        print("  sample counts for (s1, a):")
+        print(learned_model.counts)
 
-    missing = [target for target in targets if target not in witnesses]
-    if missing:
+    for target in targets:
+        exact = exact_results[target]
+        if not exact.feasible:
+            continue
         print()
-        print(f"Not found by this finite grid: {missing}")
-        print("'Not found' is empirical, not a proof that the target is impossible.")
+        print(f"Exact witness for pi_star={target}")
+        print(f"  pi_dagger: {exact.attacker.label()}")
+        print(f"  supremum teaching margin: {exact.maximum_margin:.4f}")
+
+    impossible = [target for target in targets if not exact_results[target].feasible]
+    if impossible:
+        print()
+        print(f"Exactly impossible targets: {impossible}")
 
 
 if __name__ == "__main__":
