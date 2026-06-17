@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from itertools import product
-from typing import Iterable
+from typing import Iterable, Sequence
 
 import numpy as np
 from scipy.optimize import linprog
@@ -135,6 +135,22 @@ def best_alpha(vectors: Iterable[AlphaVector], belief: Array) -> AlphaVector:
 def greedy_action(vectors: Iterable[AlphaVector], belief: Array) -> int:
     # Convenience wrapper when only the root action matters.
     return best_alpha(vectors, belief).action
+
+
+def follow_observation_history(alpha: AlphaVector, observations: Sequence[int]) -> AlphaVector:
+    # Walk the contingent policy tree after observing a concrete history.
+    subtree = alpha
+    for observation in observations:
+        if not subtree.observation_subplans:
+            raise ValueError("observation history is longer than this policy tree")
+        if observation < 0 or observation >= len(subtree.observation_subplans):
+            raise ValueError(f"observation index out of range: {observation}")
+        subtree = subtree.observation_subplans[observation]
+    return subtree
+
+
+def action_after_observation_history(alpha: AlphaVector, observations: Sequence[int]) -> int:
+    return follow_observation_history(alpha, observations).action
 
 
 def pretty_plan(alpha: AlphaVector, pomdp: TabularPOMDP, indent: int = 0) -> str:
