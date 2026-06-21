@@ -1,0 +1,341 @@
+=== Joint horizon-2 experiment summary ===
+instances: 1280
+history-dependent pi2*: 210
+root Q2 all feasible: 1280
+root Q2 all dominant: 201
+root Q2 all posterior-optimal: 1280
+terminal all feasible: 1280
+terminal all dominant: 112
+terminal all posterior-optimal: 1280
+history-dependent and root Q2 dominant: 2
+history-dependent and terminal feasible: 210
+history-dependent and terminal dominant: 0
+history-dependent and terminal posterior-optimal: 210
+root Q2 dominant and terminal dominant: 100
+root Q2 dominant and both components help: 62
+both components help for both s1 values: 283
+
+=== By action_control / obs_info ===
+control  obsinfo  hist_dep  root_dom  term_dom  both_help_both_s1
+   0.55     0.55         3/80          9/80          7/80                  19/80 
+   0.55     0.70         3/80          9/80          7/80                  18/80 
+   0.55     0.85         0/80         10/80          7/80                  17/80 
+   0.55     0.95         0/80         10/80          7/80                  17/80 
+   0.70     0.55        20/80         10/80          7/80                  19/80 
+   0.70     0.70        14/80         10/80          7/80                  17/80 
+   0.70     0.85         5/80         11/80          7/80                  16/80 
+   0.70     0.95         1/80         11/80          7/80                  17/80 
+   0.85     0.55        28/80         12/80          7/80                  20/80 
+   0.85     0.70        26/80         13/80          7/80                  17/80 
+   0.85     0.85        11/80         13/80          7/80                  17/80 
+   0.85     0.95         3/80         13/80          7/80                  17/80 
+   0.95     0.55        30/80         15/80          7/80                  20/80 
+   0.95     0.70        30/80         18/80          7/80                  17/80 
+   0.95     0.85        26/80         17/80          7/80                  17/80 
+   0.95     0.95        10/80         20/80          7/80                  18/80 
+
+=== Most common joint policies ===
+ 251  pi1=(1, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a1, (1,1):a0}
+ 228  pi1=(1, 1), pi2={(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+ 165  pi1=(0, 1), pi2={(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a1}
+ 159  pi1=(0, 0), pi2={(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a0}
+  95  pi1=(1, 1), pi2={(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a1}
+  49  pi1=(0, 0), pi2={(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a1}
+  47  pi1=(0, 1), pi2={(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+  34  pi1=(0, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a1, (1,1):a0}
+  28  pi1=(1, 0), pi2={(0,0):a0, (0,1):a0, (1,0):a1, (1,1):a0}
+  27  pi1=(0, 1), pi2={(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+
+=== Clean candidate pattern: first action helps immediate AND future, terminal posterior-optimal ===
+seed=40  action_control=0.95  obs_info=0.95
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.9834
+  root Q2 all dominant: True, min dominance margin=1.4394
+  root Q2 all posterior-optimal: True, min posterior margin=2.5813
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=0.7995
+  s1=0: Q gap=+2.5813, immediate gap=+0.5089, future gap=+2.0724, both help=True
+  s1=1: Q gap=+3.3227, immediate gap=+1.2503, future gap=+2.0724, both help=True
+seed=40  action_control=0.95  obs_info=0.85
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.9268
+  root Q2 all dominant: True, min dominance margin=1.3828
+  root Q2 all posterior-optimal: True, min posterior margin=2.5247
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=1.1922
+  s1=0: Q gap=+2.5247, immediate gap=+0.5089, future gap=+2.0158, both help=True
+  s1=1: Q gap=+3.2661, immediate gap=+1.2503, future gap=+2.0158, both help=True
+seed=40  action_control=0.95  obs_info=0.70
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.8419
+  root Q2 all dominant: True, min dominance margin=1.2979
+  root Q2 all posterior-optimal: True, min posterior margin=2.4398
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=1.3671
+  s1=0: Q gap=+2.4398, immediate gap=+0.5089, future gap=+1.9309, both help=True
+  s1=1: Q gap=+3.1812, immediate gap=+1.2503, future gap=+1.9309, both help=True
+seed=40  action_control=0.95  obs_info=0.55
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.7570
+  root Q2 all dominant: True, min dominance margin=1.2130
+  root Q2 all posterior-optimal: True, min posterior margin=2.3549
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=1.4382
+  s1=0: Q gap=+2.3549, immediate gap=+0.5089, future gap=+1.8460, both help=True
+  s1=1: Q gap=+3.0963, immediate gap=+1.2503, future gap=+1.8460, both help=True
+seed=51  action_control=0.95  obs_info=0.85
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.8434
+  root Q2 all dominant: True, min dominance margin=1.2384
+  root Q2 all posterior-optimal: True, min posterior margin=2.3351
+  terminal all feasible: True, min feasible margin=1.8270
+  terminal all dominant: False, min dominance margin=-0.7780
+  terminal all posterior-optimal: True, min posterior margin=0.8920
+  s1=0: Q gap=+2.3351, immediate gap=+0.3187, future gap=+2.0164, both help=True
+  s1=1: Q gap=+3.5862, immediate gap=+1.5698, future gap=+2.0164, both help=True
+seed=51  action_control=0.95  obs_info=0.95
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.8387
+  root Q2 all dominant: True, min dominance margin=1.2337
+  root Q2 all posterior-optimal: True, min posterior margin=2.3304
+  terminal all feasible: True, min feasible margin=1.8270
+  terminal all dominant: False, min dominance margin=-0.7780
+  terminal all posterior-optimal: True, min posterior margin=0.5625
+  s1=0: Q gap=+2.3304, immediate gap=+0.3187, future gap=+2.0117, both help=True
+  s1=1: Q gap=+3.5815, immediate gap=+1.5698, future gap=+2.0117, both help=True
+seed=51  action_control=0.95  obs_info=0.70
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.7286
+  root Q2 all dominant: True, min dominance margin=1.1236
+  root Q2 all posterior-optimal: True, min posterior margin=2.2203
+  terminal all feasible: True, min feasible margin=1.8270
+  terminal all dominant: False, min dominance margin=-0.7780
+  terminal all posterior-optimal: True, min posterior margin=1.0387
+  s1=0: Q gap=+2.2203, immediate gap=+0.3187, future gap=+1.9016, both help=True
+  s1=1: Q gap=+3.4714, immediate gap=+1.5698, future gap=+1.9016, both help=True
+seed=40  action_control=0.85  obs_info=0.95
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.5229
+  root Q2 all dominant: True, min dominance margin=0.9789
+  root Q2 all posterior-optimal: True, min posterior margin=2.1208
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=0.4068
+  s1=0: Q gap=+2.1208, immediate gap=+0.5089, future gap=+1.6119, both help=True
+  s1=1: Q gap=+2.8622, immediate gap=+1.2503, future gap=+1.6119, both help=True
+
+=== Root Q2 dominant candidates ===
+seed=8  action_control=0.95  obs_info=0.95
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.1912
+  root Q2 all dominant: True, min dominance margin=1.8292
+  root Q2 all posterior-optimal: True, min posterior margin=2.3886
+  terminal all feasible: True, min feasible margin=1.3860
+  terminal all dominant: True, min dominance margin=0.0240
+  terminal all posterior-optimal: True, min posterior margin=0.7050
+  s1=0: Q gap=+2.3886, immediate gap=+0.5834, future gap=+1.8052, both help=True
+  s1=1: Q gap=+3.7381, immediate gap=+1.9329, future gap=+1.8052, both help=True
+seed=8  action_control=0.95  obs_info=0.85
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=2.9865
+  root Q2 all dominant: True, min dominance margin=1.6245
+  root Q2 all posterior-optimal: True, min posterior margin=2.1839
+  terminal all feasible: True, min feasible margin=1.3860
+  terminal all dominant: True, min dominance margin=0.0240
+  terminal all posterior-optimal: True, min posterior margin=0.8693
+  s1=0: Q gap=+2.1839, immediate gap=+0.5834, future gap=+1.6005, both help=True
+  s1=1: Q gap=+3.5334, immediate gap=+1.9329, future gap=+1.6005, both help=True
+seed=40  action_control=0.95  obs_info=0.95
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.9834
+  root Q2 all dominant: True, min dominance margin=1.4394
+  root Q2 all posterior-optimal: True, min posterior margin=2.5813
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=0.7995
+  s1=0: Q gap=+2.5813, immediate gap=+0.5089, future gap=+2.0724, both help=True
+  s1=1: Q gap=+3.3227, immediate gap=+1.2503, future gap=+2.0724, both help=True
+seed=8  action_control=0.85  obs_info=0.95
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=2.7900
+  root Q2 all dominant: True, min dominance margin=1.4280
+  root Q2 all posterior-optimal: True, min posterior margin=1.9874
+  terminal all feasible: True, min feasible margin=1.3860
+  terminal all dominant: True, min dominance margin=0.0240
+  terminal all posterior-optimal: True, min posterior margin=0.5407
+  s1=0: Q gap=+1.9874, immediate gap=+0.5834, future gap=+1.4040, both help=True
+  s1=1: Q gap=+3.3369, immediate gap=+1.9329, future gap=+1.4040, both help=True
+seed=40  action_control=0.95  obs_info=0.85
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.9268
+  root Q2 all dominant: True, min dominance margin=1.3828
+  root Q2 all posterior-optimal: True, min posterior margin=2.5247
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=1.1922
+  s1=0: Q gap=+2.5247, immediate gap=+0.5089, future gap=+2.0158, both help=True
+  s1=1: Q gap=+3.2661, immediate gap=+1.2503, future gap=+2.0158, both help=True
+seed=8  action_control=0.95  obs_info=0.70
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=2.6794
+  root Q2 all dominant: True, min dominance margin=1.3174
+  root Q2 all posterior-optimal: True, min posterior margin=1.8768
+  terminal all feasible: True, min feasible margin=1.3860
+  terminal all dominant: True, min dominance margin=0.0240
+  terminal all posterior-optimal: True, min posterior margin=0.9425
+  s1=0: Q gap=+1.8768, immediate gap=+0.5834, future gap=+1.2934, both help=True
+  s1=1: Q gap=+3.2263, immediate gap=+1.9329, future gap=+1.2934, both help=True
+seed=40  action_control=0.95  obs_info=0.70
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=3.8419
+  root Q2 all dominant: True, min dominance margin=1.2979
+  root Q2 all posterior-optimal: True, min posterior margin=2.4398
+  terminal all feasible: True, min feasible margin=1.9110
+  terminal all dominant: False, min dominance margin=-0.6330
+  terminal all posterior-optimal: True, min posterior margin=1.3671
+  s1=0: Q gap=+2.4398, immediate gap=+0.5089, future gap=+1.9309, both help=True
+  s1=1: Q gap=+3.1812, immediate gap=+1.2503, future gap=+1.9309, both help=True
+seed=8  action_control=0.85  obs_info=0.85
+  pi1*: s1=0 -> a1, s1=1 -> a1
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a1}
+  history dependent pi2*: False
+  root Q2 all feasible: True, min feasible margin=2.6308
+  root Q2 all dominant: True, min dominance margin=1.2688
+  root Q2 all posterior-optimal: True, min posterior margin=1.8282
+  terminal all feasible: True, min feasible margin=1.3860
+  terminal all dominant: True, min dominance margin=0.0240
+  terminal all posterior-optimal: True, min posterior margin=0.7050
+  s1=0: Q gap=+1.8282, immediate gap=+0.5834, future gap=+1.2448, both help=True
+  s1=1: Q gap=+3.1777, immediate gap=+1.9329, future gap=+1.2448, both help=True
+
+=== Interesting but messy: history-dependent pi2*, terminal posterior-optimal ===
+seed=79  action_control=0.95  obs_info=0.55
+  pi1*: s1=0 -> a0, s1=1 -> a1
+  pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=1.6939
+  root Q2 all dominant: False, min dominance margin=-1.6299
+  root Q2 all posterior-optimal: True, min posterior margin=0.9307
+  terminal all feasible: True, min feasible margin=1.2900
+  terminal all dominant: False, min dominance margin=-2.3680
+  terminal all posterior-optimal: True, min posterior margin=0.9650
+  s1=0: Q gap=+1.5697, immediate gap=+1.2298, future gap=+0.3399, both help=True
+  s1=1: Q gap=+0.9307, immediate gap=+1.2706, future gap=-0.3399, both help=False
+seed=79  action_control=0.95  obs_info=0.70
+  pi1*: s1=0 -> a0, s1=1 -> a1
+  pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=1.5631
+  root Q2 all dominant: False, min dominance margin=-1.4991
+  root Q2 all posterior-optimal: True, min posterior margin=1.0615
+  terminal all feasible: True, min feasible margin=1.2900
+  terminal all dominant: False, min dominance margin=-2.3680
+  terminal all posterior-optimal: True, min posterior margin=0.8899
+  s1=0: Q gap=+1.4389, immediate gap=+1.2298, future gap=+0.2091, both help=True
+  s1=1: Q gap=+1.0615, immediate gap=+1.2706, future gap=-0.2091, both help=False
+seed=19  action_control=0.95  obs_info=0.55
+  pi1*: s1=0 -> a1, s1=1 -> a0
+  pi2*: {(0,0):a0, (0,1):a0, (1,0):a1, (1,1):a0}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=1.0634
+  root Q2 all dominant: False, min dominance margin=-1.3346
+  root Q2 all posterior-optimal: True, min posterior margin=0.3440
+  terminal all feasible: True, min feasible margin=1.0340
+  terminal all dominant: False, min dominance margin=-1.3640
+  terminal all posterior-optimal: True, min posterior margin=0.8891
+  s1=0: Q gap=+0.3440, immediate gap=+0.6446, future gap=-0.3006, both help=False
+  s1=1: Q gap=+1.7457, immediate gap=+1.4451, future gap=+0.3006, both help=True
+seed=41  action_control=0.85  obs_info=0.70
+  pi1*: s1=0 -> a1, s1=1 -> a0
+  pi2*: {(0,0):a1, (0,1):a0, (1,0):a1, (1,1):a1}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=1.4443
+  root Q2 all dominant: False, min dominance margin=-2.2557
+  root Q2 all posterior-optimal: True, min posterior margin=0.3343
+  terminal all feasible: True, min feasible margin=1.2650
+  terminal all dominant: False, min dominance margin=-2.4350
+  terminal all posterior-optimal: True, min posterior margin=0.7978
+  s1=0: Q gap=+1.0227, immediate gap=+1.2020, future gap=-0.1793, both help=False
+  s1=1: Q gap=+0.3343, immediate gap=+0.1550, future gap=+0.1793, both help=True
+seed=76  action_control=0.95  obs_info=0.95
+  pi1*: s1=0 -> a1, s1=1 -> a0
+  pi2*: {(0,0):a1, (0,1):a1, (1,0):a1, (1,1):a0}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=2.0704
+  root Q2 all dominant: False, min dominance margin=-0.7246
+  root Q2 all posterior-optimal: True, min posterior margin=0.4792
+  terminal all feasible: True, min feasible margin=0.8050
+  terminal all dominant: False, min dominance margin=-2.6370
+  terminal all posterior-optimal: True, min posterior margin=0.7955
+  s1=0: Q gap=+1.2319, immediate gap=+1.4835, future gap=-0.2516, both help=False
+  s1=1: Q gap=+0.4792, immediate gap=+0.2276, future gap=+0.2516, both help=True
+seed=69  action_control=0.85  obs_info=0.55
+  pi1*: s1=0 -> a0, s1=1 -> a1
+  pi2*: {(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=3.1261
+  root Q2 all dominant: False, min dominance margin=-0.9921
+  root Q2 all posterior-optimal: True, min posterior margin=0.2559
+  terminal all feasible: True, min feasible margin=1.5230
+  terminal all dominant: False, min dominance margin=-2.6370
+  terminal all posterior-optimal: True, min posterior margin=0.7891
+  s1=0: Q gap=+0.8287, immediate gap=+1.3596, future gap=-0.5309, both help=False
+  s1=1: Q gap=+0.2559, immediate gap=-0.2750, future gap=+0.5309, both help=False
+seed=19  action_control=0.95  obs_info=0.70
+  pi1*: s1=0 -> a1, s1=1 -> a0
+  pi2*: {(0,0):a0, (0,1):a0, (1,0):a1, (1,1):a0}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=1.0277
+  root Q2 all dominant: False, min dominance margin=-1.3703
+  root Q2 all posterior-optimal: True, min posterior margin=0.3083
+  terminal all feasible: True, min feasible margin=1.0340
+  terminal all dominant: False, min dominance margin=-1.3640
+  terminal all posterior-optimal: True, min posterior margin=0.7717
+  s1=0: Q gap=+0.3083, immediate gap=+0.6446, future gap=-0.3363, both help=False
+  s1=1: Q gap=+1.7814, immediate gap=+1.4451, future gap=+0.3363, both help=True
+seed=18  action_control=0.95  obs_info=0.55
+  pi1*: s1=0 -> a0, s1=1 -> a1
+  pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+  history dependent pi2*: True
+  root Q2 all feasible: True, min feasible margin=1.2401
+  root Q2 all dominant: False, min dominance margin=-1.4859
+  root Q2 all posterior-optimal: True, min posterior margin=0.2811
+  terminal all feasible: True, min feasible margin=1.2830
+  terminal all dominant: False, min dominance margin=-1.4430
+  terminal all posterior-optimal: True, min posterior margin=0.7428
+  s1=0: Q gap=+1.0661, immediate gap=+1.0232, future gap=+0.0429, both help=True
+  s1=1: Q gap=+0.2811, immediate gap=+0.3240, future gap=-0.0429, both help=False

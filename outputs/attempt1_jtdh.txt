@@ -1,0 +1,384 @@
+=== History-dependent joint-tree dominant cases ===
+cases: 23
+
+=== By action_control / obs_info ===
+action_control=0.70  obs_info=0.70  count=1
+action_control=0.70  obs_info=0.85  count=1
+action_control=0.70  obs_info=0.95  count=1
+action_control=0.85  obs_info=0.55  count=4
+action_control=0.85  obs_info=0.70  count=2
+action_control=0.85  obs_info=0.85  count=1
+action_control=0.85  obs_info=0.95  count=2
+action_control=0.95  obs_info=0.55  count=3
+action_control=0.95  obs_info=0.70  count=5
+action_control=0.95  obs_info=0.85  count=2
+action_control=0.95  obs_info=0.95  count=1
+
+--- Case 1 ---
+seed=30  action_control=0.95  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint tree dominance margin: +0.2861
+joint tree posterior margin: +0.2861
+root Q2 dominance margin: -0.6235
+terminal dominance margin: -1.7870
+terminal posterior margin: +0.6619
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+1.575  R(s1=0, s2=0, a1)=+0.743
+  R(s1=0, s2=1, a0)=-0.970  R(s1=0, s2=1, a1)=-0.212
+  R(s1=1, s2=0, a0)=-0.287  R(s1=1, s2=0, a1)=+2.362
+  R(s1=1, s2=1, a0)=-0.943  R(s1=1, s2=1, a1)=+1.376
+
+--- Case 2 ---
+seed=30  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint tree dominance margin: +0.1017
+joint tree posterior margin: +0.2102
+root Q2 dominance margin: -0.8533
+terminal dominance margin: -1.7870
+terminal posterior margin: +0.4759
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+1.575  R(s1=0, s2=0, a1)=+0.743
+  R(s1=0, s2=1, a0)=-0.970  R(s1=0, s2=1, a1)=-0.212
+  R(s1=1, s2=0, a0)=-0.287  R(s1=1, s2=0, a1)=+2.362
+  R(s1=1, s2=1, a0)=-0.943  R(s1=1, s2=1, a1)=+1.376
+
+--- Case 3 ---
+seed=32  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0901
+joint tree posterior margin: +0.0901
+root Q2 dominance margin: -1.9277
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.1395
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 4 ---
+seed=32  action_control=0.95  obs_info=0.85
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0855
+joint tree posterior margin: +0.0855
+root Q2 dominance margin: -1.8533
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.1503
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 5 ---
+seed=77  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0842
+joint tree posterior margin: +0.1811
+root Q2 dominance margin: +0.0842
+terminal dominance margin: -1.4210
+terminal posterior margin: +0.4101
+both components help: s1=0 -> False, s1=1 -> True
+rewards:
+  R(s1=0, s2=0, a0)=+0.428  R(s1=0, s2=0, a1)=-0.571
+  R(s1=0, s2=1, a0)=+2.654  R(s1=0, s2=1, a1)=-1.609
+  R(s1=1, s2=0, a0)=+0.662  R(s1=1, s2=0, a1)=-0.143
+  R(s1=1, s2=1, a0)=-0.355  R(s1=1, s2=1, a1)=+1.066
+
+--- Case 6 ---
+seed=77  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0704
+joint tree posterior margin: +0.1707
+root Q2 dominance margin: +0.0704
+terminal dominance margin: -1.4210
+terminal posterior margin: +0.5615
+both components help: s1=0 -> False, s1=1 -> True
+rewards:
+  R(s1=0, s2=0, a0)=+0.428  R(s1=0, s2=0, a1)=-0.571
+  R(s1=0, s2=1, a0)=+2.654  R(s1=0, s2=1, a1)=-1.609
+  R(s1=1, s2=0, a0)=+0.662  R(s1=1, s2=0, a1)=-0.143
+  R(s1=1, s2=1, a0)=-0.355  R(s1=1, s2=1, a1)=+1.066
+
+--- Case 7 ---
+seed=32  action_control=0.95  obs_info=0.55
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0639
+joint tree posterior margin: +0.0639
+root Q2 dominance margin: -2.0022
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.1234
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 8 ---
+seed=32  action_control=0.85  obs_info=0.85
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0631
+joint tree posterior margin: +0.0631
+root Q2 dominance margin: -1.6887
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.1327
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 9 ---
+seed=32  action_control=0.85  obs_info=0.70
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0603
+joint tree posterior margin: +0.0603
+root Q2 dominance margin: -1.7598
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.0991
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 10 ---
+seed=34  action_control=0.95  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0569
+joint tree posterior margin: +0.1203
+root Q2 dominance margin: -1.4309
+terminal dominance margin: -0.8520
+terminal posterior margin: +0.2323
+both components help: s1=0 -> False, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=-0.040  R(s1=0, s2=0, a1)=-1.258
+  R(s1=0, s2=1, a0)=+2.574  R(s1=0, s2=1, a1)=+0.482
+  R(s1=1, s2=0, a0)=+0.644  R(s1=1, s2=0, a1)=-0.208
+  R(s1=1, s2=1, a0)=+0.058  R(s1=1, s2=1, a1)=+0.337
+
+--- Case 11 ---
+seed=30  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint tree dominance margin: +0.0382
+joint tree posterior margin: +0.1776
+root Q2 dominance margin: -0.9168
+terminal dominance margin: -1.7870
+terminal posterior margin: +0.5841
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+1.575  R(s1=0, s2=0, a1)=+0.743
+  R(s1=0, s2=1, a0)=-0.970  R(s1=0, s2=1, a1)=-0.212
+  R(s1=1, s2=0, a0)=-0.287  R(s1=1, s2=0, a1)=+2.362
+  R(s1=1, s2=1, a0)=-0.943  R(s1=1, s2=1, a1)=+1.376
+
+--- Case 12 ---
+seed=57  action_control=0.85  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a1, (0,1):a1, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0350
+joint tree posterior margin: +0.0414
+root Q2 dominance margin: -0.8380
+terminal dominance margin: -1.0970
+terminal posterior margin: +0.1042
+both components help: s1=0 -> False, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.332  R(s1=0, s2=0, a1)=+0.461
+  R(s1=0, s2=1, a0)=+1.558  R(s1=0, s2=1, a1)=+1.334
+  R(s1=1, s2=0, a0)=+0.158  R(s1=1, s2=0, a1)=+0.366
+  R(s1=1, s2=1, a0)=-1.185  R(s1=1, s2=1, a1)=-0.395
+
+--- Case 13 ---
+seed=66  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0337
+joint tree posterior margin: +0.0337
+root Q2 dominance margin: -1.5590
+terminal dominance margin: -2.4460
+terminal posterior margin: +0.0763
+both components help: s1=0 -> False, s1=1 -> True
+rewards:
+  R(s1=0, s2=0, a0)=+0.541  R(s1=0, s2=0, a1)=-0.540
+  R(s1=0, s2=1, a0)=-0.493  R(s1=0, s2=1, a1)=-1.060
+  R(s1=1, s2=0, a0)=-1.326  R(s1=1, s2=0, a1)=-1.552
+  R(s1=1, s2=1, a0)=+0.502  R(s1=1, s2=1, a1)=+1.120
+
+--- Case 14 ---
+seed=32  action_control=0.70  obs_info=0.85
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0295
+joint tree posterior margin: +0.0295
+root Q2 dominance margin: -1.4418
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.0861
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 15 ---
+seed=32  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0266
+joint tree posterior margin: +0.0266
+root Q2 dominance margin: -1.8310
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.0524
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 16 ---
+seed=32  action_control=0.95  obs_info=0.95
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0235
+joint tree posterior margin: +0.0235
+root Q2 dominance margin: -1.8037
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.1557
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 17 ---
+seed=53  action_control=0.85  obs_info=0.95
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0212
+joint tree posterior margin: +0.0212
+root Q2 dominance margin: -0.0324
+terminal dominance margin: -2.4120
+terminal posterior margin: +0.0274
+both components help: s1=0 -> False, s1=1 -> True
+rewards:
+  R(s1=0, s2=0, a0)=+0.105  R(s1=0, s2=0, a1)=-0.807
+  R(s1=0, s2=1, a0)=+0.892  R(s1=0, s2=1, a1)=-0.929
+  R(s1=1, s2=0, a0)=-1.136  R(s1=1, s2=0, a1)=+0.513
+  R(s1=1, s2=1, a0)=+1.319  R(s1=1, s2=1, a1)=+1.276
+
+--- Case 18 ---
+seed=32  action_control=0.70  obs_info=0.70
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0155
+joint tree posterior margin: +0.0155
+root Q2 dominance margin: -1.5080
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.0281
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 19 ---
+seed=32  action_control=0.85  obs_info=0.95
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0060
+joint tree posterior margin: +0.0060
+root Q2 dominance margin: -1.6413
+terminal dominance margin: -1.1280
+terminal posterior margin: +0.0343
+both components help: s1=0 -> True, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.909  R(s1=0, s2=0, a1)=+0.751
+  R(s1=0, s2=1, a0)=-0.026  R(s1=0, s2=1, a1)=+0.653
+  R(s1=1, s2=0, a0)=-0.651  R(s1=1, s2=0, a1)=-1.829
+  R(s1=1, s2=1, a0)=+1.679  R(s1=1, s2=1, a1)=+0.477
+
+--- Case 20 ---
+seed=66  action_control=0.95  obs_info=0.85
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0056
+joint tree posterior margin: +0.0056
+root Q2 dominance margin: -1.5030
+terminal dominance margin: -2.4460
+terminal posterior margin: +0.0321
+both components help: s1=0 -> False, s1=1 -> True
+rewards:
+  R(s1=0, s2=0, a0)=+0.541  R(s1=0, s2=0, a1)=-0.540
+  R(s1=0, s2=1, a0)=-0.493  R(s1=0, s2=1, a1)=-1.060
+  R(s1=1, s2=0, a0)=-1.326  R(s1=1, s2=0, a1)=-1.552
+  R(s1=1, s2=1, a0)=+0.502  R(s1=1, s2=1, a1)=+1.120
+
+--- Case 21 ---
+seed=53  action_control=0.70  obs_info=0.95
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0037
+joint tree posterior margin: +0.0037
+root Q2 dominance margin: -0.3724
+terminal dominance margin: -2.4120
+terminal posterior margin: +0.0057
+both components help: s1=0 -> False, s1=1 -> True
+rewards:
+  R(s1=0, s2=0, a0)=+0.105  R(s1=0, s2=0, a1)=-0.807
+  R(s1=0, s2=1, a0)=+0.892  R(s1=0, s2=1, a1)=-0.929
+  R(s1=1, s2=0, a0)=-1.136  R(s1=1, s2=0, a1)=+0.513
+  R(s1=1, s2=1, a0)=+1.319  R(s1=1, s2=1, a1)=+1.276
+
+--- Case 22 ---
+seed=53  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0037
+joint tree posterior margin: +0.0037
+root Q2 dominance margin: -0.0043
+terminal dominance margin: -2.4120
+terminal posterior margin: +0.0057
+both components help: s1=0 -> False, s1=1 -> True
+rewards:
+  R(s1=0, s2=0, a0)=+0.105  R(s1=0, s2=0, a1)=-0.807
+  R(s1=0, s2=1, a0)=+0.892  R(s1=0, s2=1, a1)=-0.929
+  R(s1=1, s2=0, a0)=-1.136  R(s1=1, s2=0, a1)=+0.513
+  R(s1=1, s2=1, a0)=+1.319  R(s1=1, s2=1, a1)=+1.276
+
+--- Case 23 ---
+seed=57  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a1, (0,1):a1, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0003
+joint tree posterior margin: +0.0564
+root Q2 dominance margin: -0.7943
+terminal dominance margin: -1.0970
+terminal posterior margin: +0.1212
+both components help: s1=0 -> False, s1=1 -> False
+rewards:
+  R(s1=0, s2=0, a0)=+0.332  R(s1=0, s2=0, a1)=+0.461
+  R(s1=0, s2=1, a0)=+1.558  R(s1=0, s2=1, a1)=+1.334
+  R(s1=1, s2=0, a0)=+0.158  R(s1=1, s2=0, a1)=+0.366
+  R(s1=1, s2=1, a0)=-1.185  R(s1=1, s2=1, a1)=-0.395
+

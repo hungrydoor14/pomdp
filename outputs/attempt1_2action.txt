@@ -1,0 +1,190 @@
+=== Memoryless two-action plan vs history-based joint tree ===
+history-dependent joint-tree dominant cases: 23
+
+cases where memoryless matches both initial states: 0/23
+history-dependent initial-state trees matched by memoryless: 0/23
+
+--- Case 1 ---
+seed=32  action_control=0.70  obs_info=0.70
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0155
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.103940, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 2 ---
+seed=32  action_control=0.70  obs_info=0.85
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0295
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.029455, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 3 ---
+seed=53  action_control=0.70  obs_info=0.95
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0037
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a1), best memoryless=(a0, then a0), gap=+0.043187, uses_history=True, matches=False
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 4 ---
+seed=30  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint tree dominance margin: +0.1017
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a1), best memoryless=(a0, then a1), gap=+0.320905, uses_history=True, matches=False
+  initial s1=1: target tree=(a1, a2(0)=a1, a2(1)=a1), best memoryless=(a1, then a1), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 5 ---
+seed=32  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0266
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.234348, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 6 ---
+seed=66  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0337
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a0), gap=+0.259977, uses_history=True, matches=False
+
+--- Case 7 ---
+seed=77  action_control=0.85  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0842
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a0), gap=+0.579481, uses_history=True, matches=False
+
+--- Case 8 ---
+seed=32  action_control=0.85  obs_info=0.70
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0603
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.148727, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 9 ---
+seed=57  action_control=0.85  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a1, (0,1):a1, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0350
+  initial s1=0: target tree=(a0, a2(0)=a1, a2(1)=a1), best memoryless=(a0, then a1), gap=+0.000000, uses_history=False, matches=True
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a1), gap=+0.041396, uses_history=True, matches=False
+
+--- Case 10 ---
+seed=32  action_control=0.85  obs_info=0.85
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0631
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.063106, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 11 ---
+seed=32  action_control=0.85  obs_info=0.95
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0060
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.006025, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 12 ---
+seed=53  action_control=0.85  obs_info=0.95
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0212
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a1), best memoryless=(a0, then a0), gap=+0.060757, uses_history=True, matches=False
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 13 ---
+seed=30  action_control=0.95  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint tree dominance margin: +0.2861
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a1), best memoryless=(a0, then a1), gap=+0.396782, uses_history=True, matches=False
+  initial s1=1: target tree=(a1, a2(0)=a1, a2(1)=a1), best memoryless=(a1, then a1), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 14 ---
+seed=32  action_control=0.95  obs_info=0.55
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0639
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.271631, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 15 ---
+seed=34  action_control=0.95  obs_info=0.55
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0569
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a0), gap=+0.120277, uses_history=True, matches=False
+
+--- Case 16 ---
+seed=30  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint tree dominance margin: +0.0382
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a1), best memoryless=(a0, then a1), gap=+0.514815, uses_history=True, matches=False
+  initial s1=1: target tree=(a1, a2(0)=a1, a2(1)=a1), best memoryless=(a1, then a1), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 17 ---
+seed=32  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0901
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.178586, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 18 ---
+seed=53  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0037
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a0), gap=+0.382976, uses_history=True, matches=False
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 19 ---
+seed=57  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a1, (0,1):a1, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0003
+  initial s1=0: target tree=(a0, a2(0)=a1, a2(1)=a1), best memoryless=(a0, then a1), gap=+0.000000, uses_history=False, matches=True
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a1), gap=+0.056359, uses_history=True, matches=False
+
+--- Case 20 ---
+seed=77  action_control=0.95  obs_info=0.70
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0704
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a0), gap=+0.886245, uses_history=True, matches=False
+
+--- Case 21 ---
+seed=32  action_control=0.95  obs_info=0.85
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0855
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.085540, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
+--- Case 22 ---
+seed=66  action_control=0.95  obs_info=0.85
+pi1*: s1=0 -> a0, s1=1 -> a1
+pi2*: {(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint tree dominance margin: +0.0056
+  initial s1=0: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+  initial s1=1: target tree=(a1, a2(0)=a0, a2(1)=a1), best memoryless=(a1, then a1), gap=+0.120403, uses_history=True, matches=False
+
+--- Case 23 ---
+seed=32  action_control=0.95  obs_info=0.95
+pi1*: s1=0 -> a1, s1=1 -> a0
+pi2*: {(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint tree dominance margin: +0.0235
+  initial s1=0: target tree=(a1, a2(0)=a1, a2(1)=a0), best memoryless=(a1, then a0), gap=+0.023510, uses_history=True, matches=False
+  initial s1=1: target tree=(a0, a2(0)=a0, a2(1)=a0), best memoryless=(a0, then a0), gap=+0.000000, uses_history=False, matches=True
+
