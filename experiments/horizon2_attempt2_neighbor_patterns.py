@@ -6,7 +6,7 @@ from itertools import product
 
 import numpy as np
 
-from horizon2_joint_policy_experiments import (
+from horizon2_attempt1_joint_policy_experiments import (
     NUM_ACTIONS,
     NUM_S1,
     NUM_S2,
