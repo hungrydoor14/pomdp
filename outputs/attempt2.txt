@@ -1,0 +1,113 @@
+=== Attempt 2: neighbor-deviation patterns ===
+instances: 1280
+initial-state local problems: 2560
+
+=== Candidate rules vs joint whole-policy dominance ===
+one-deviation dominance                count= 440  TP= 397  FP=  43  FN=   0
+root-deviation dominance               count= 440  TP= 397  FP=  43  FN=   0
+continuation-deviation dominance       count=1280  TP= 397  FP= 883  FN=   0
+root AND continuation deviations       count= 440  TP= 397  FP=  43  FN=   0
+same-root all continuations            count=1280  TP= 397  FP= 883  FN=   0
+different-root all continuations       count= 397  TP= 397  FP=   0  FN=   0
+same-continuation root flip            count= 440  TP= 397  FP=  43  FN=   0
+posterior optimal against all trees    count=1280  TP= 397  FP= 883  FN=   0
+
+=== Local equivalence checks ===
+global dominant local problems: 1433/2560
+one-deviation dominant local problems: 1532/2560
+one-deviation/global mismatches: 99
+first mismatches:
+  seed=65 control=0.55 obs=0.70 initial_s1=1 target=(1, (0, 1)) global_margin=-0.0939 one_dev_margin=+0.0152 worst=(0, (1, 1)) worst_one=(1, (0, 0))
+  seed=0 control=0.70 obs=0.55 initial_s1=1 target=(1, (0, 0)) global_margin=-0.1225 one_dev_margin=+0.0154 worst=(0, (0, 1)) worst_one=(1, (0, 1))
+  seed=0 control=0.70 obs=0.70 initial_s1=0 target=(0, (0, 1)) global_margin=-0.0815 one_dev_margin=+0.0079 worst=(1, (0, 0)) worst_one=(1, (0, 1))
+  seed=0 control=0.70 obs=0.70 initial_s1=1 target=(1, (0, 0)) global_margin=-0.0175 one_dev_margin=+0.0894 worst=(0, (0, 1)) worst_one=(1, (0, 1))
+  seed=61 control=0.70 obs=0.70 initial_s1=0 target=(0, (0, 1)) global_margin=-0.0799 one_dev_margin=+0.1285 worst=(1, (0, 0)) worst_one=(0, (0, 0))
+  seed=0 control=0.85 obs=0.55 initial_s1=0 target=(1, (0, 0)) global_margin=-0.0506 one_dev_margin=+0.1010 worst=(0, (0, 1)) worst_one=(1, (0, 1))
+  seed=1 control=0.85 obs=0.55 initial_s1=0 target=(0, (1, 0)) global_margin=-0.3414 one_dev_margin=+0.0792 worst=(1, (0, 1)) worst_one=(0, (1, 1))
+  seed=7 control=0.85 obs=0.55 initial_s1=0 target=(1, (0, 1)) global_margin=-0.1000 one_dev_margin=+0.0876 worst=(0, (1, 0)) worst_one=(0, (0, 1))
+
+=== Binding deviations among locally dominant history-dependent cases ===
+history-dependent locally dominant problems: 162
+one continuation flip          135
+different root, any continuation 27
+
+=== History-dependent joint-dominant instance shapes ===
+instances: 23
+policy shapes:
+  10  pi1=(1, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+   5  pi1=(0, 1), pi2={(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+   3  pi1=(0, 1), pi2={(0,0):a0, (0,1):a1, (1,0):a0, (1,1):a0}
+   3  pi1=(0, 1), pi2={(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+   2  pi1=(0, 1), pi2={(0,0):a1, (0,1):a1, (1,0):a0, (1,1):a1}
+
+=== Strongest history-dependent joint-dominant examples ===
+--- Case 1 ---
+seed=30 action_control=0.95 obs_info=0.55
+pi1=(0, 1), pi2={(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint margin=+0.2861
+  initial_s1=0 target=(0, (0, 1)) global=+0.3315 one-dev=+0.3968 root=+0.6176 cont=+0.3968 diff-root=+0.3315 worst=(1, (1, 1))
+  initial_s1=1 target=(1, (1, 1)) global=+0.2861 one-dev=+0.2861 root=+1.6263 cont=+0.2861 diff-root=+1.2295 worst=(1, (0, 1))
+
+--- Case 2 ---
+seed=30 action_control=0.85 obs_info=0.55
+pi1=(0, 1), pi2={(0,0):a0, (0,1):a1, (1,0):a1, (1,1):a1}
+joint margin=+0.1017
+  initial_s1=0 target=(0, (0, 1)) global=+0.1017 one-dev=+0.3119 root=+0.3119 cont=+0.3209 diff-root=+0.1017 worst=(1, (1, 1))
+  initial_s1=1 target=(1, (1, 1)) global=+0.2102 one-dev=+0.2102 root=+1.7803 cont=+0.2102 diff-root=+1.4593 worst=(1, (0, 1))
+
+--- Case 3 ---
+seed=32 action_control=0.95 obs_info=0.70
+pi1=(1, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint margin=+0.0901
+  initial_s1=0 target=(1, (1, 0)) global=+0.1786 one-dev=+0.1786 root=+0.7319 cont=+0.1786 diff-root=+0.6417 worst=(1, (0, 0))
+  initial_s1=1 target=(0, (0, 0)) global=+0.0901 one-dev=+0.0901 root=+0.5568 cont=+0.0901 diff-root=+0.3783 worst=(0, (1, 0))
+
+--- Case 4 ---
+seed=32 action_control=0.95 obs_info=0.85
+pi1=(1, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint margin=+0.0855
+  initial_s1=0 target=(1, (1, 0)) global=+0.0855 one-dev=+0.0855 root=+0.6837 cont=+0.0855 diff-root=+0.5673 worst=(1, (0, 0))
+  initial_s1=1 target=(0, (0, 0)) global=+0.1164 one-dev=+0.1164 root=+0.5382 cont=+0.1164 diff-root=+0.4527 worst=(0, (1, 0))
+
+--- Case 5 ---
+seed=77 action_control=0.85 obs_info=0.55
+pi1=(0, 1), pi2={(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint margin=+0.0842
+  initial_s1=0 target=(0, (0, 0)) global=+0.1098 one-dev=+0.1811 root=+0.6893 cont=+0.1811 diff-root=+0.1098 worst=(1, (0, 1))
+  initial_s1=1 target=(1, (0, 1)) global=+0.0842 one-dev=+0.2654 root=+0.2654 cont=+0.5795 diff-root=+0.0842 worst=(0, (0, 0))
+
+--- Case 6 ---
+seed=77 action_control=0.95 obs_info=0.70
+pi1=(0, 1), pi2={(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint margin=+0.0704
+  initial_s1=0 target=(0, (0, 0)) global=+0.0704 one-dev=+0.1707 root=+0.9567 cont=+0.1707 diff-root=+0.0704 worst=(1, (0, 1))
+  initial_s1=1 target=(1, (0, 1)) global=+0.1236 one-dev=+0.2943 root=+0.2943 cont=+0.8862 diff-root=+0.1236 worst=(0, (0, 0))
+
+--- Case 7 ---
+seed=32 action_control=0.95 obs_info=0.55
+pi1=(1, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint margin=+0.0639
+  initial_s1=0 target=(1, (1, 0)) global=+0.2716 one-dev=+0.2716 root=+0.7801 cont=+0.2716 diff-root=+0.7162 worst=(1, (0, 0))
+  initial_s1=1 target=(0, (0, 0)) global=+0.0639 one-dev=+0.0639 root=+0.5754 cont=+0.0639 diff-root=+0.3038 worst=(0, (1, 0))
+
+--- Case 8 ---
+seed=32 action_control=0.85 obs_info=0.85
+pi1=(1, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint margin=+0.0631
+  initial_s1=0 target=(1, (1, 0)) global=+0.0631 one-dev=+0.0631 root=+0.4966 cont=+0.0631 diff-root=+0.4027 worst=(1, (0, 0))
+  initial_s1=1 target=(0, (0, 0)) global=+0.0939 one-dev=+0.0939 root=+0.6804 cont=+0.0939 diff-root=+0.6173 worst=(0, (1, 0))
+
+--- Case 9 ---
+seed=32 action_control=0.85 obs_info=0.70
+pi1=(1, 0), pi2={(0,0):a1, (0,1):a0, (1,0):a0, (1,1):a0}
+joint margin=+0.0603
+  initial_s1=0 target=(1, (1, 0)) global=+0.1487 one-dev=+0.1487 root=+0.5341 cont=+0.1487 diff-root=+0.4738 worst=(1, (0, 0))
+  initial_s1=1 target=(0, (0, 0)) global=+0.0603 one-dev=+0.0603 root=+0.6949 cont=+0.0603 diff-root=+0.5462 worst=(0, (1, 0))
+
+--- Case 10 ---
+seed=34 action_control=0.95 obs_info=0.55
+pi1=(0, 1), pi2={(0,0):a0, (0,1):a0, (1,0):a0, (1,1):a1}
+joint margin=+0.0569
+  initial_s1=0 target=(0, (0, 0)) global=+0.3091 one-dev=+0.3387 root=+0.4293 cont=+0.3387 diff-root=+0.3091 worst=(1, (0, 1))
+  initial_s1=1 target=(1, (0, 1)) global=+0.0569 one-dev=+0.1203 root=+0.3957 cont=+0.1203 diff-root=+0.0569 worst=(0, (0, 0))
+

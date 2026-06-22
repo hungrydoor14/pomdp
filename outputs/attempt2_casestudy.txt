@@ -1,0 +1,46 @@
+=== Attempt 2 fixed-sequence case-study candidates ===
+Selection rule: fixed sequence, joint margin > 0, root margin < 0, terminal margin < 0
+cases: 79
+
+rank  seed  control  obsinfo  target  joint_margin  root_margin  terminal_margin
+   1    54     0.55     0.95  (a1,a1)       +0.3275      -1.4172          -1.4420
+   2    54     0.55     0.85  (a1,a1)       +0.3208      -1.4153          -1.4420
+   3    23     0.70     0.55  (a0,a0)       +0.3130      -0.2670          -0.2760
+   4    54     0.55     0.70  (a1,a1)       +0.3106      -1.4124          -1.4420
+   5    23     0.55     0.55  (a0,a0)       +0.3063      -0.2737          -0.2760
+   6     6     0.55     0.95  (a1,a1)       +0.3057      -1.2233          -1.1910
+   7    54     0.55     0.55  (a1,a1)       +0.3005      -1.4095          -1.4420
+   8     6     0.55     0.85  (a1,a1)       +0.2942      -1.2348          -1.1910
+   9    23     0.55     0.70  (a0,a0)       +0.2942      -0.2858          -0.2760
+  10    23     0.85     0.55  (a0,a0)       +0.2938      -0.2602          -0.2760
+  11    23     0.55     0.85  (a0,a0)       +0.2821      -0.2979          -0.2760
+  12     6     0.55     0.70  (a1,a1)       +0.2770      -1.2520          -1.1910
+
+=== Detailed fixed-sequence case study ===
+seed=54  action_control=0.55  obs_info=0.95
+target sequence: (a1, a1)
+joint two-period margin: +0.3275
+root-only margin: -1.4172
+terminal margin: -1.4420
+
+rewards:
+  R(s1=0, s2=0, a0)=-0.971  R(s1=0, s2=0, a1)=-0.197
+  R(s1=0, s2=1, a0)=+1.245  R(s1=0, s2=1, a1)=+1.749
+  R(s1=1, s2=0, a0)=-0.516  R(s1=1, s2=0, a1)=+1.295
+  R(s1=1, s2=1, a0)=-0.567  R(s1=1, s2=1, a1)=+0.054
+
+fixed two-action sequence comparisons:
+initial s1=0: target value=+0.406971
+  candidate=(a0,a0)  value=-1.005322  belief_gap=+1.412293  hidden_min_gap=+1.223292
+  candidate=(a0,a1)  value=-0.310838  belief_gap=+0.717809  hidden_min_gap=+0.528809
+  candidate=(a1,a0)  value=-0.267496  belief_gap=+0.674467  hidden_min_gap=+0.674467
+  candidate=(a1,a1)  value=+0.406971  belief_gap=+0.000000  hidden_min_gap=+0.000000
+  best first-action switch=(a0,a1)  value=-0.310838  gap=+0.717809
+
+initial s1=1: target value=+0.446471
+  candidate=(a0,a0)  value=-1.250822  belief_gap=+1.697293  hidden_min_gap=+1.340292
+  candidate=(a0,a1)  value=-0.556338  belief_gap=+1.002809  hidden_min_gap=+0.645809
+  candidate=(a1,a0)  value=-0.227996  belief_gap=+0.674467  hidden_min_gap=+0.674467
+  candidate=(a1,a1)  value=+0.446471  belief_gap=+0.000000  hidden_min_gap=+0.000000
+  best first-action switch=(a0,a1)  value=-0.556338  gap=+1.002809
+
