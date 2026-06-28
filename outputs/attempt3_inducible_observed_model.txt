@@ -1,0 +1,39 @@
+=== Attempt 3: inducible observed-model characterization ===
+instance-target pairs: 5120
+
+=== Feasibility counts ===
+relaxed b in [0,1]^4: 2850
+Bayes-plausible inducible b: 2461
+
+=== Pinned fixed-sequence case ===
+seed=54 control=0.55 obs=0.95 target=(a1,a1)
+inducible feasible: True
+margin: +0.9812
+witness b(0,a0)=0.000  b(0,a1)=0.300  b(1,a0)=0.700  b(1,a1)=0.700
+constructed attacker induces b(0,a0)=0.000  b(0,a1)=0.300  b(1,a0)=0.700  b(1,a1)=0.700
+
+=== Strongest inducible examples ===
+ 1. seed= 8 control=0.95 obs=0.95 target=(a1,a1) margin=+2.3448
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
+ 2. seed=40 control=0.95 obs=0.95 target=(a1,a1) margin=+2.2582
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
+ 3. seed=60 control=0.95 obs=0.95 target=(a1,a1) margin=+2.2473
+    witness b(0,a0)=0.000  b(0,a1)=0.300  b(1,a0)=0.000  b(1,a1)=1.000
+ 4. seed=51 control=0.95 obs=0.95 target=(a1,a1) margin=+2.2310
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.700  b(1,a1)=1.000
+ 5. seed=40 control=0.85 obs=0.95 target=(a1,a1) margin=+2.2142
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
+ 6. seed=40 control=0.95 obs=0.85 target=(a1,a1) margin=+2.2142
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
+ 7. seed=40 control=0.85 obs=0.85 target=(a1,a1) margin=+2.1799
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
+ 8. seed=51 control=0.85 obs=0.95 target=(a1,a1) margin=+2.1412
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.700  b(1,a1)=1.000
+ 9. seed=51 control=0.95 obs=0.85 target=(a1,a1) margin=+2.1412
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.700  b(1,a1)=1.000
+10. seed= 8 control=0.85 obs=0.95 target=(a1,a1) margin=+2.1317
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
+11. seed= 8 control=0.95 obs=0.85 target=(a1,a1) margin=+2.1317
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
+12. seed=40 control=0.70 obs=0.95 target=(a1,a1) margin=+2.1227
+    witness b(0,a0)=0.000  b(0,a1)=1.000  b(1,a0)=0.000  b(1,a1)=1.000
