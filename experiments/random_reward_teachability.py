@@ -283,6 +283,92 @@ def print_reward_table(game: FactoredGame):
         )
 
 
+def range_condition_details(game: FactoredGame, target: tuple[int, int]):
+    details = []
+    for s1, target_action in enumerate(target):
+        target_rewards = np.array(
+            [
+                game.rewards[join_state(s1, s2), target_action]
+                for s2 in range(NUM_S2)
+            ]
+        )
+        for alternative_action in range(NUM_ACTIONS):
+            if alternative_action == target_action:
+                continue
+            alternative_rewards = np.array(
+                [
+                    game.rewards[join_state(s1, s2), alternative_action]
+                    for s2 in range(NUM_S2)
+                ]
+            )
+            details.append(
+                {
+                    "s1": s1,
+                    "target_action": target_action,
+                    "alternative_action": alternative_action,
+                    "min_alternative": float(np.min(alternative_rewards)),
+                    "max_alternative": float(np.max(alternative_rewards)),
+                    "min_target": float(np.min(target_rewards)),
+                    "max_target": float(np.max(target_rewards)),
+                    # New theorem: min R(alternative) < max R(target).
+                    "range_margin": float(
+                        np.max(target_rewards) - np.min(alternative_rewards)
+                    ),
+                    # Old universal condition: max R(alternative) < min R(target).
+                    "universal_margin": float(
+                        np.min(target_rewards) - np.max(alternative_rewards)
+                    ),
+                }
+            )
+    return details
+
+
+def print_range_condition_examples(game: FactoredGame, targets: list[tuple[int, int]]):
+    print()
+    print("Range-condition checks")
+    print("pi_star          range margin    universal margin    status")
+
+    rows = []
+    for target in targets:
+        details = range_condition_details(game, target)
+        range_margin = min(item["range_margin"] for item in details)
+        universal_margin = min(item["universal_margin"] for item in details)
+        range_ok = range_margin > 0.0
+        universal_ok = universal_margin > 0.0
+        if range_ok and universal_ok:
+            status = "range and universal"
+        elif range_ok:
+            status = "range only"
+        else:
+            status = "range fails"
+        rows.append((target, range_margin, universal_margin, status, details))
+        print(
+            f"{target!s:<16} {range_margin:>12.4f} "
+            f"{universal_margin:>17.4f}    {status}"
+        )
+
+    range_only = [row for row in rows if row[1] > 0.0 and row[2] <= 0.0]
+    examples = range_only if range_only else [row for row in rows if row[1] > 0.0]
+    if not examples:
+        return
+
+    target, _, _, status, details = examples[0]
+    print()
+    print(f"Example for pi_star={target} ({status})")
+    for item in details:
+        print(
+            "  "
+            f"s1={item['s1']} target=a{item['target_action']} "
+            f"alternative=a{item['alternative_action']}: "
+            f"min alternative={item['min_alternative']:.3f}, "
+            f"max target={item['max_target']:.3f}, "
+            f"range margin={item['range_margin']:.3f}; "
+            f"max alternative={item['max_alternative']:.3f}, "
+            f"min target={item['min_target']:.3f}, "
+            f"universal margin={item['universal_margin']:.3f}"
+        )
+
+
 def main():
     seed = 0
     num_samples = 10_000
@@ -348,6 +434,8 @@ def main():
             f"{target!s:<16} {sampled_result:<17} "
             f"{exact_label:<15} {exact.maximum_margin:>8.4f}"
         )
+
+    print_range_condition_examples(game, targets)
 
     for target in targets:
         witness = witnesses.get(target)
