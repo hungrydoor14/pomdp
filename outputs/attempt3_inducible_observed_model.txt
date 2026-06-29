@@ -5,12 +5,69 @@ instance-target pairs: 5120
 relaxed b in [0,1]^4: 2850
 Bayes-plausible inducible b: 2461
 
-=== Pinned fixed-sequence case ===
-seed=54 control=0.55 obs=0.95 target=(a1,a1)
+=== T3 case study: what the learner would learn ===
+Selected instance: seed=30 control=0.70 obs=0.70 target=(a1,a1)
+Selection rule: strongest inducible case where attack changes an observed-only T*.
 inducible feasible: True
-margin: +0.9812
-witness b(0,a0)=0.000  b(0,a1)=0.300  b(1,a0)=0.700  b(1,a1)=0.700
-constructed attacker induces b(0,a0)=0.000  b(0,a1)=0.300  b(1,a0)=0.700  b(1,a1)=0.700
+inducible margin: +1.8542
+
+Original full-state rewards:
+  R(s1=0,s2=0,a0)=+1.575  R(s1=0,s2=0,a1)=+0.743
+  R(s1=0,s2=1,a0)=-0.970  R(s1=0,s2=1,a1)=-0.212
+  R(s1=1,s2=0,a0)=-0.287  R(s1=1,s2=0,a1)=+2.362
+  R(s1=1,s2=1,a0)=-0.943  R(s1=1,s2=1,a1)=+1.376
+
+1) If the learner had everything, including S2:
+  state (s1=0,s2=0) -> T*={(a0,a1)} first_actions={a0} value=+2.648472
+  state (s1=0,s2=1) -> T*={(a1,a1)} first_actions={a1} value=+0.736413
+  state (s1=1,s2=0) -> T*={(a1,a1)} first_actions={a1} value=+3.310414
+  state (s1=1,s2=1) -> T*={(a1,a1)} first_actions={a1} value=+2.324413
+
+2) With only S1 and no attack-induced action mixture:
+  prior hidden mixtures: b(0,a0)=0.300  b(0,a1)=0.300  b(1,a0)=0.700  b(1,a1)=0.700
+  observed initial s1=0
+     (a0,a0) value=+0.960903
+   * (a0,a1) value=+1.730080
+     (a1,a0) value=+0.369132
+     (a1,a1) value=+1.559805
+  learned T*: {(a0,a1)}  value=+1.730080
+  observed initial s1=1
+     (a0,a0) value=-0.596797
+     (a0,a1) value=+0.172380
+     (a1,a0) value=+1.584432
+   * (a1,a1) value=+2.775105
+  learned T*: {(a1,a1)}  value=+2.775105
+
+3) Given pi dagger is the actual data-generating policy:
+  LP witness mixtures: b(0,a0)=1.000  b(0,a1)=0.000  b(1,a0)=0.700  b(1,a1)=0.700
+  positive-coverage mixtures used by pi_dagger: b(0,a0)=0.999  b(0,a1)=0.001  b(1,a0)=0.700  b(1,a1)=0.700
+  pi_dagger(a1 | s1=0,s2=0)=0.999572
+  pi_dagger(a1 | s1=0,s2=1)=0.002335
+  pi_dagger(a1 | s1=1,s2=0)=0.499833
+  pi_dagger(a1 | s1=1,s2=1)=0.500071
+  induced mixtures: b(0,a0)=0.999  b(0,a1)=0.001  b(1,a0)=0.700  b(1,a1)=0.700
+
+  attacked observed initial s1=0
+     (a0,a0) value=-1.798230
+     (a0,a1) value=+0.108421
+     (a1,a0) value=-0.055090
+   * (a1,a1) value=+1.959228
+  learned T*: {(a1,a1)}  value=+1.959228
+  attacked observed initial s1=1
+     (a0,a0) value=-1.576910
+     (a0,a1) value=+0.329741
+     (a1,a0) value=+0.874567
+   * (a1,a1) value=+2.888885
+  learned T*: {(a1,a1)}  value=+2.888885
+
+4) Static observed transition graph/table:
+  s1=0 --a0--> s1'=0:0.580, s1'=1:0.420
+  s1=0 --a1--> s1'=0:0.420, s1'=1:0.580
+  s1=1 --a0--> s1'=0:0.580, s1'=1:0.420
+  s1=1 --a1--> s1'=0:0.420, s1'=1:0.580
+
+Case-study conclusion: under the attacker-induced observed model, the target sequence (a1,a1) is in T* for both observed initial states, so its first action a1 is rationalized.
+
 
 === Strongest inducible examples ===
  1. seed= 8 control=0.95 obs=0.95 target=(a1,a1) margin=+2.3448

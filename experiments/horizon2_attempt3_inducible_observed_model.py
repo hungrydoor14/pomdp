@@ -226,6 +226,61 @@ def induced_b_from_attacker(action_probs):
     return induced
 
 
+def prior_b_vector():
+    b = np.zeros(NUM_S1 * NUM_ACTIONS)
+    for s1 in range(NUM_S1):
+        for action in range(NUM_ACTIONS):
+            b[b_index(s1, action)] = prior_hidden_prob(s1)
+    return b
+
+
+def observed_value(pomdp, sequence, initial_s1, b):
+    constant, coeffs = observed_value_coefficients(
+        pomdp,
+        sequence[0],
+        sequence[1],
+        initial_s1,
+    )
+    return float(constant + coeffs @ b)
+
+
+def full_state_value(pomdp, sequence, state):
+    first_action, second_action = sequence
+    future = 0.0
+    for next_state in range(pomdp.num_states):
+        future += (
+            pomdp.transitions[first_action, state, next_state]
+            * pomdp.rewards[next_state, second_action]
+        )
+    return float(pomdp.rewards[state, first_action] + pomdp.discount * future)
+
+
+def best_sequences(sequence_values):
+    best_value = max(value for _, value in sequence_values)
+    winners = [
+        sequence
+        for sequence, value in sequence_values
+        if abs(value - best_value) <= 1e-9
+    ]
+    return best_value, winners
+
+
+def format_sequence(sequence):
+    return f"(a{sequence[0]},a{sequence[1]})"
+
+
+def format_sequence_set(sequences):
+    return "{" + ", ".join(format_sequence(sequence) for sequence in sequences) + "}"
+
+
+def format_action_set(actions):
+    return "{" + ", ".join(f"a{action}" for action in actions) + "}"
+
+
+def positive_coverage_b(b, eps=1e-3):
+    return np.clip(b, eps, 1.0 - eps)
+
+
 def format_b(b):
     if b is None:
         return "None"
@@ -234,6 +289,121 @@ def format_b(b):
         for s1 in range(NUM_S1)
         for action in range(NUM_ACTIONS)
     )
+
+
+def print_sequence_values(label, sequence_values):
+    best_value, winners = best_sequences(sequence_values)
+    print(label)
+    for sequence, value in sorted(sequence_values):
+        marker = " *" if sequence in winners else "  "
+        print(f"  {marker} {format_sequence(sequence)} value={value:+.6f}")
+    print(f"  learned T*: {format_sequence_set(winners)}  value={best_value:+.6f}")
+
+
+def observed_tstar_by_initial_state(pomdp, b):
+    winners_by_s1 = []
+    for initial_s1 in range(NUM_S1):
+        values = [
+            (sequence, observed_value(pomdp, sequence, initial_s1, b))
+            for sequence in product(range(NUM_ACTIONS), repeat=2)
+        ]
+        winners_by_s1.append(set(best_sequences(values)[1]))
+    return winners_by_s1
+
+
+def print_t3_case_study(pomdp, row):
+    target = row["target"]
+    result = row["inducible"]
+    print("=== T3 case study: what the learner would learn ===")
+    print(
+        f"Selected instance: seed={row['seed']} "
+        f"control={row['action_control']:.2f} obs={row['obs_info']:.2f} "
+        f"target={format_sequence(target)}"
+    )
+    print("Selection rule: strongest inducible case where attack changes an observed-only T*.")
+    print(f"inducible feasible: {result.feasible}")
+    print(f"inducible margin: {result.margin:+.4f}")
+    print()
+
+    print("Original full-state rewards:")
+    for s1 in range(NUM_S1):
+        for s2 in range(NUM_S2):
+            state = join_state(s1, s2)
+            print(
+                f"  R(s1={s1},s2={s2},a0)={pomdp.rewards[state, 0]:+.3f}  "
+                f"R(s1={s1},s2={s2},a1)={pomdp.rewards[state, 1]:+.3f}"
+            )
+    print()
+
+    print("1) If the learner had everything, including S2:")
+    full_first_actions = {}
+    for state in range(pomdp.num_states):
+        s1, s2 = divmod(state, NUM_S2)
+        values = [
+            (sequence, full_state_value(pomdp, sequence, state))
+            for sequence in product(range(NUM_ACTIONS), repeat=2)
+        ]
+        best_value, winners = best_sequences(values)
+        full_first_actions[(s1, s2)] = sorted({sequence[0] for sequence in winners})
+        print(
+            f"  state (s1={s1},s2={s2}) -> T*={format_sequence_set(winners)} "
+            f"first_actions={format_action_set(full_first_actions[(s1, s2)])} "
+            f"value={best_value:+.6f}"
+        )
+    print()
+
+    prior_b = prior_b_vector()
+    print("2) With only S1 and no attack-induced action mixture:")
+    print(f"  prior hidden mixtures: {format_b(prior_b)}")
+    for initial_s1 in range(NUM_S1):
+        values = [
+            (sequence, observed_value(pomdp, sequence, initial_s1, prior_b))
+            for sequence in product(range(NUM_ACTIONS), repeat=2)
+        ]
+        print_sequence_values(f"  observed initial s1={initial_s1}", values)
+    print()
+
+    print("3) Given pi dagger is the actual data-generating policy:")
+    print(f"  LP witness mixtures: {format_b(result.witness_b)}")
+    actual_b = positive_coverage_b(result.witness_b)
+    print(f"  positive-coverage mixtures used by pi_dagger: {format_b(actual_b)}")
+    attacker = construct_attacker_from_b(actual_b)
+    if attacker is None:
+        print("  no attacker could be constructed from this witness")
+        return
+    for s1 in range(NUM_S1):
+        for s2 in range(NUM_S2):
+            print(
+                f"  pi_dagger(a1 | s1={s1},s2={s2})="
+                f"{attacker[s1, s2, 1]:.6f}"
+            )
+    induced = induced_b_from_attacker(attacker)
+    print(f"  induced mixtures: {format_b(induced)}")
+    print()
+
+    for initial_s1 in range(NUM_S1):
+        values = [
+            (sequence, observed_value(pomdp, sequence, initial_s1, actual_b))
+            for sequence in product(range(NUM_ACTIONS), repeat=2)
+        ]
+        print_sequence_values(f"  attacked observed initial s1={initial_s1}", values)
+    print()
+
+    print("4) Static observed transition graph/table:")
+    for current_s1 in range(NUM_S1):
+        for action in range(NUM_ACTIONS):
+            transition = observed_transition(pomdp, action)
+            print(
+                f"  s1={current_s1} --a{action}--> "
+                f"s1'=0:{transition[0]:.3f}, s1'=1:{transition[1]:.3f}"
+            )
+    print()
+    print(
+        "Case-study conclusion: under the attacker-induced observed model, "
+        f"the target sequence {format_sequence(target)} is in T* for both "
+        f"observed initial states, so its first action a{target[0]} is rationalized."
+    )
+    print()
 
 
 def main():
@@ -276,15 +446,35 @@ def main():
         and r["obs_info"] == 0.95
         and r["target"] == (1, 1)
     ][0]
-    print("=== Pinned fixed-sequence case ===")
-    print("seed=54 control=0.55 obs=0.95 target=(a1,a1)")
-    print(f"inducible feasible: {pinned['inducible'].feasible}")
-    print(f"margin: {pinned['inducible'].margin:+.4f}")
-    print(f"witness {format_b(pinned['inducible'].witness_b)}")
+    case_study_candidates = []
+    prior_b = prior_b_vector()
+    for row in rows:
+        if not row["inducible"].feasible:
+            continue
+        pomdp = build_action_dependent_factored_pomdp(
+            row["seed"],
+            action_control=row["action_control"],
+            p_s1_matches_s2=row["obs_info"],
+        )
+        prior_tstar = observed_tstar_by_initial_state(pomdp, prior_b)
+        attack_tstar = observed_tstar_by_initial_state(pomdp, row["inducible"].witness_b)
+        target = row["target"]
+        target_changed_baseline = any(target not in winners for winners in prior_tstar)
+        target_optimal_under_attack = all(target in winners for winners in attack_tstar)
+        if target_changed_baseline and target_optimal_under_attack:
+            case_study_candidates.append(row)
 
-    attacker = construct_attacker_from_b(pinned["inducible"].witness_b)
-    induced = induced_b_from_attacker(attacker)
-    print(f"constructed attacker induces {format_b(induced)}")
+    case_study = max(
+        case_study_candidates,
+        key=lambda row: row["inducible"].margin,
+        default=pinned,
+    )
+    case_study_pomdp = build_action_dependent_factored_pomdp(
+        case_study["seed"],
+        action_control=case_study["action_control"],
+        p_s1_matches_s2=case_study["obs_info"],
+    )
+    print_t3_case_study(case_study_pomdp, case_study)
     print()
 
     examples = [r for r in rows if r["inducible"].feasible]
