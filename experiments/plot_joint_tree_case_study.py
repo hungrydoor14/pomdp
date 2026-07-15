@@ -10,7 +10,7 @@ os.environ.setdefault("MPLCONFIGDIR", "/private/tmp/matplotlib")
 import matplotlib.pyplot as plt
 import numpy as np
 
-from horizon2_joint_policy_experiments import (
+from two_period_joint_policy_experiments import (
     NUM_ACTIONS,
     analyze,
     build_action_dependent_factored_pomdp,

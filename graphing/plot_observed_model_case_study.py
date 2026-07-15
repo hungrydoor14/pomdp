@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import os
 from pathlib import Path
 from typing import Any
@@ -22,11 +23,8 @@ from matplotlib.patches import (
 # Paths
 # ============================================================
 
-INPUT_FILE = Path("graphing/case_study.txt")
-
+DEFAULT_INPUT_FILE = Path("graphing/case_study-c2.txt")
 OUTPUT_DIR = Path("outputs/t3")
-PNG_OUTPUT = OUTPUT_DIR / "t3_case_study.png"
-PDF_OUTPUT = OUTPUT_DIR / "t3_case_study.pdf"
 
 
 # ============================================================
@@ -1100,8 +1098,47 @@ def draw_visual_legend(
 # Main
 # ============================================================
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Render the two-panel observed-model case-study figure."
+        )
+    )
+    parser.add_argument(
+        "--input",
+        type=Path,
+        default=DEFAULT_INPUT_FILE,
+        help=(
+            "Case data file. Examples: "
+            "graphing/case_study-c1.txt or "
+            "graphing/case_study-c2.txt."
+        ),
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=OUTPUT_DIR,
+        help="Directory for the rendered PNG/PDF.",
+    )
+    parser.add_argument(
+        "--output-name",
+        default=None,
+        help=(
+            "Output basename without extension. "
+            "Defaults to the input file stem."
+        ),
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
-    data = read_case_file(INPUT_FILE)
+    args = parse_args()
+    input_file = args.input
+    output_name = args.output_name or input_file.stem
+    png_output = args.output_dir / f"{output_name}.png"
+    pdf_output = args.output_dir / f"{output_name}.pdf"
+
+    data = read_case_file(input_file)
 
     original_results = derive_model_results(
         data,
@@ -1201,13 +1238,13 @@ def main() -> None:
     ax.set_aspect("equal")
     ax.axis("off")
 
-    OUTPUT_DIR.mkdir(
+    args.output_dir.mkdir(
         parents=True,
         exist_ok=True,
     )
 
     fig.savefig(
-        PNG_OUTPUT,
+        png_output,
         dpi=300,
         bbox_inches="tight",
         pad_inches=0.12,
@@ -1215,7 +1252,7 @@ def main() -> None:
     )
 
     fig.savefig(
-        PDF_OUTPUT,
+        pdf_output,
         bbox_inches="tight",
         pad_inches=0.12,
         facecolor="white",
@@ -1243,8 +1280,9 @@ def main() -> None:
         attacked_results[1]["sequence"],
     )
 
-    print(f"Saved PNG: {PNG_OUTPUT}")
-    print(f"Saved PDF: {PDF_OUTPUT}")
+    print(f"Input: {input_file}")
+    print(f"Saved PNG: {png_output}")
+    print(f"Saved PDF: {pdf_output}")
 
 
 if __name__ == "__main__":

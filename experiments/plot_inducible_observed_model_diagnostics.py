@@ -14,13 +14,13 @@ import numpy as np
 
 sys.path.append(os.path.dirname(__file__))
 
-from horizon2_attempt1_joint_policy_experiments import (
+from two_period_joint_policy_experiments import (
     NUM_ACTIONS,
     NUM_S1,
     NUM_S2,
     build_action_dependent_factored_pomdp,
 )
-from horizon2_attempt3_inducible_observed_model import (
+from find_inducible_observed_model_case import (
     b_index,
     construct_attacker_from_b,
     format_sequence,

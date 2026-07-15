@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from horizon2_attempt1_joint_policy_experiments import (
+from two_period_joint_policy_experiments import (
     analyze,
     build_action_dependent_factored_pomdp,
     initial_belief_given_s1,

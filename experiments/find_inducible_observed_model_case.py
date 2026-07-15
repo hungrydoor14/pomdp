@@ -10,7 +10,7 @@ from scipy.optimize import linprog
 
 sys.path.append(os.path.dirname(__file__))
 
-from horizon2_attempt1_joint_policy_experiments import (
+from two_period_joint_policy_experiments import (
     NUM_ACTIONS,
     NUM_S1,
     NUM_S2,

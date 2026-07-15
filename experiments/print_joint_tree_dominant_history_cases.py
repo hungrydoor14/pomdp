@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections import Counter
 
-from horizon2_joint_policy_experiments import (
+from two_period_joint_policy_experiments import (
     analyze,
     build_action_dependent_factored_pomdp,
     policy_label,

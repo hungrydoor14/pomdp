@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from experiments.horizon2_attempt1_joint_policy_experiments import (
+from experiments.two_period_joint_policy_experiments import (
     NUM_ACTIONS,
     analyze,
     build_action_dependent_factored_pomdp,
