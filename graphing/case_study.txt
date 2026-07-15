@@ -1,41 +1,41 @@
 # meta
-seed 0
-control 0.75
-obs_info 0.95
+seed 30
+control 0.70
+obs_info 0.70
 target a1 a1
-margin 0.629
+margin 1.8542
 
 # rewards
 # state  R(state,a0)  R(state,a1)
-00  0.126  -0.132
-01  0.640   0.105
-10 -0.536   0.362
-11  1.304   0.947
+00  1.575   0.743
+01 -0.970  -0.212
+10 -0.287   2.362
+11 -0.943   1.376
 
 # original_values_s1_0
 # sequence  value
-a0 a0  0.690
-a0 a1  0.475
-a1 a0  0.349
-a1 a1  0.134
+a0 a0  0.960903
+a0 a1  1.730080
+a1 a0  0.369132
+a1 a1  1.559805
 
 # original_values_s1_1
-a0 a0  1.323
-a0 a1  1.232
-a1 a0  1.342
-a1 a1  1.251
+a0 a0 -0.596797
+a0 a1  0.172380
+a1 a0  1.584432
+a1 a1  2.775105
 
 # attacked_values_s1_0
-a0 a0  0.456
-a0 a1  0.481
-a1 a0  0.459
-a1 a1  0.951
+a0 a0 -1.798230
+a0 a1  0.108421
+a1 a0 -0.055090
+a1 a1  1.959228
 
 # attacked_values_s1_1
-a0 a0  0.666
-a0 a1  0.873
-a1 a0  1.284
-a1 a1  1.762
+a0 a0 -1.576910
+a0 a1  0.329741
+a1 a0  0.874567
+a1 a1  2.888885
 
 # original_b
 # s1  action  P(S2=1 | S1=s1,A=action)
@@ -45,17 +45,17 @@ a1 a1  1.762
 1 a1 0.700
 
 # attacked_b
-0 a0 0.177
-0 a1 0.999
-1 a0 0.499
-1 a1 0.975
+0 a0 0.999
+0 a1 0.001
+1 a0 0.700
+1 a1 0.700
 
 # original_transitions
 # action  P(next_S1=0)  P(next_S1=1)
-a0 0.680 0.320
-a1 0.680 0.320
+a0 0.580 0.420
+a1 0.420 0.580
 
 # attacked_transitions
 # action  P(next_S1=0)  P(next_S1=1)
-a0 0.790 0.210
-a1 0.051 0.949
+a0 0.580 0.420
+a1 0.420 0.580

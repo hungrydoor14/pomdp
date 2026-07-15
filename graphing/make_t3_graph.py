@@ -51,7 +51,7 @@ NODE_RADIUS = 0.43
 ACTION_DIAMOND_HALF_WIDTH = 0.25
 ACTION_DIAMOND_HALF_HEIGHT = 0.18
 TRANSITION_ALPHA = 0.54
-TRANSITION_CURVE = 0.032
+ARROW_LINEWIDTH = 2.6
 
 STATE_ORDER = [
     "00",
@@ -640,7 +640,7 @@ def draw_selected_action_arrow(
         shrinkA=0,
         shrinkB=0,
         mutation_scale=12,
-        linewidth=2.25,
+        linewidth=ARROW_LINEWIDTH,
         color=RED,
         zorder=9,
     )
@@ -653,18 +653,16 @@ def draw_probability_arrow(
     start: tuple[float, float],
     end: tuple[float, float],
     probability: float,
-    curvature: float,
 ) -> None:
     """
-    Draw a gently curved observed-transition arrow.
+    Draw a straight observed-transition arrow.
     """
     arrow = FancyArrowPatch(
         start,
         end,
-        connectionstyle=f"arc3,rad={curvature}",
         arrowstyle="-|>",
         mutation_scale=11,
-        linewidth=2.8,
+        linewidth=ARROW_LINEWIDTH,
         color=transition_color(probability),
         alpha=1.0,
         zorder=3,
@@ -702,7 +700,7 @@ def draw_four_state_transition_structure(
 ) -> None:
     """
     Give each complete Period-1 state its own selected-action arrow,
-    action diamond, and two gently curved transition arrows.
+    action diamond, and two straight transition arrows.
 
     Transition probabilities are encoded by arrow color and summarized
     in the legend, keeping the crossing arrows readable.
@@ -713,7 +711,7 @@ def draw_four_state_transition_structure(
         + 0.42 * (period2_x - period1_x)
     )
 
-    for row_index, source_state in enumerate(STATE_ORDER):
+    for source_state in STATE_ORDER:
         observed_s1 = int(source_state[0])
 
         selected_sequence = results[observed_s1]["sequence"]
@@ -742,19 +740,11 @@ def draw_four_state_transition_structure(
                 target_y,
             )
 
-            if next_s1 == 0:
-                curvature = -TRANSITION_CURVE
-            else:
-                curvature = TRANSITION_CURVE
-
-            curvature += 0.004 * (row_index - 1.5)
-
             draw_probability_arrow(
                 ax=ax,
                 start=start,
                 end=end,
                 probability=probability,
-                curvature=curvature,
             )
 
     # --------------------------------------------------------
@@ -1058,7 +1048,7 @@ def draw_transition_legend_entry(
             (x + 0.18, arrow_y),
             arrowstyle="-|>",
             mutation_scale=10,
-            linewidth=2.2,
+            linewidth=ARROW_LINEWIDTH,
             color=transition_color(
                 probability,
                 clip_to_observed_range=False,
