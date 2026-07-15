@@ -8,13 +8,12 @@ against the attacker-induced observed model.
 Common commands:
 
 ```bash
-python3 graphing/plot_observed_model_case_study.py --input graphing/case_study-c1.txt
-python3 graphing/plot_observed_model_case_study.py --input graphing/case_study-c2.txt
+python3 graphing/plot_observed_model_case_study.py
 ```
 
 `case_study.txt`
 
-Legacy/scratch input file. At the moment it matches Case 1.
+Active input file used by `plot_observed_model_case_study.py`.
 
 `case_study-c1.txt`
 
