@@ -43,14 +43,15 @@ PANEL_FILL = "#FCFCFD"
 
 POSITIVE_BASE = "#2457FF"
 NEGATIVE_BASE = "#F28C28"
+TRANSITION_CMAP = "viridis"
+TRANSITION_COLOR_MIN = 0.35
+TRANSITION_COLOR_MAX = 0.65
 
 NODE_RADIUS = 0.43
 ACTION_DIAMOND_HALF_WIDTH = 0.25
 ACTION_DIAMOND_HALF_HEIGHT = 0.18
 TRANSITION_ALPHA = 0.54
 TRANSITION_CURVE = 0.032
-PROBABILITY_LABEL_FRACTION = 0.91
-PROBABILITY_LABEL_NUDGE = 0.09
 
 STATE_ORDER = [
     "00",
@@ -89,7 +90,8 @@ def read_case_file(path: Path) -> dict[str, Any]:
         "attacked_values_s1_1",
         "original_b",
         "attacked_b",
-        "transitions",
+        "original_transitions",
+        "attacked_transitions",
     }
 
     with path.open(
@@ -187,7 +189,10 @@ def read_case_file(path: Path) -> dict[str, Any]:
                     (int(s1), action)
                 ] = float(probability)
 
-            elif current_section == "transitions":
+            elif current_section in {
+                "original_transitions",
+                "attacked_transitions",
+            }:
                 if len(parts) != 3:
                     raise ValueError(
                         f"Line {line_number}: "
@@ -219,7 +224,8 @@ def validate_input(
         "attacked_values_s1_1",
         "original_b",
         "attacked_b",
-        "transitions",
+        "original_transitions",
+        "attacked_transitions",
     }
 
     missing = required_sections.difference(data)
@@ -346,6 +352,30 @@ def reward_color(
         base,
         intensity,
     )
+
+
+def transition_color(
+    probability: float,
+    *,
+    clip_to_observed_range: bool = True,
+) -> tuple[float, float, float, float]:
+    cmap = plt.get_cmap(TRANSITION_CMAP)
+
+    if clip_to_observed_range:
+        scaled_probability = (
+            probability - TRANSITION_COLOR_MIN
+        ) / (
+            TRANSITION_COLOR_MAX - TRANSITION_COLOR_MIN
+        )
+    else:
+        scaled_probability = probability
+
+    scaled_probability = max(
+        0.0,
+        min(1.0, scaled_probability),
+    )
+
+    return cmap(scaled_probability)
 
 
 # ============================================================
@@ -624,69 +654,23 @@ def draw_probability_arrow(
     end: tuple[float, float],
     probability: float,
     curvature: float,
-    label_side: float,
 ) -> None:
     """
-    Draw a gently curved transition arrow and place its probability
-    label directly on the arrow near the destination.
+    Draw a gently curved observed-transition arrow.
     """
-    #         linewidth=1.1 + 2.6 * probability,
-
     arrow = FancyArrowPatch(
         start,
         end,
         connectionstyle=f"arc3,rad={curvature}",
         arrowstyle="-|>",
         mutation_scale=11,
-        linewidth=2.5,
-        color=BLUE_LIGHT,
-        alpha=1,
+        linewidth=2.8,
+        color=transition_color(probability),
+        alpha=1.0,
         zorder=3,
     )
 
     ax.add_patch(arrow)
-
-    start_x, start_y = start
-    end_x, end_y = end
-
-    dx = end_x - start_x
-    dy = end_y - start_y
-    length = max(
-        (dx * dx + dy * dy) ** 0.5,
-        1e-9,
-    )
-    normal_x = -dy / length
-    normal_y = dx / length
-
-    label_x = (
-        start_x
-        + PROBABILITY_LABEL_FRACTION * dx
-        + label_side * PROBABILITY_LABEL_NUDGE * normal_x
-    )
-
-    label_y = (
-        start_y
-        + PROBABILITY_LABEL_FRACTION * dy
-        + label_side * PROBABILITY_LABEL_NUDGE * normal_y
-    )
-
-    ax.text(
-        label_x,
-        label_y,
-        f"{probability:.3f}",
-        ha="center",
-        va="center",
-        fontsize=7.2,
-        color=BLUE,
-        bbox={
-            "boxstyle": "round,pad=0.08",
-            "facecolor": "white",
-            "edgecolor": "#BFD0FF",
-            "linewidth": 0.35,
-            "alpha": 0.97,
-        },
-        zorder=11,
-    )
 
 
 def target_state_for_transition(
@@ -720,7 +704,8 @@ def draw_four_state_transition_structure(
     Give each complete Period-1 state its own selected-action arrow,
     action diamond, and two gently curved transition arrows.
 
-    Probability labels are placed close to the corresponding arrowheads.
+    Transition probabilities are encoded by arrow color and summarized
+    in the legend, keeping the crossing arrows readable.
     """
 
     diamond_x = (
@@ -759,10 +744,8 @@ def draw_four_state_transition_structure(
 
             if next_s1 == 0:
                 curvature = -TRANSITION_CURVE
-                label_side = 1.0
             else:
                 curvature = TRANSITION_CURVE
-                label_side = -1.0
 
             curvature += 0.004 * (row_index - 1.5)
 
@@ -772,7 +755,6 @@ def draw_four_state_transition_structure(
                 end=end,
                 probability=probability,
                 curvature=curvature,
-                label_side=label_side,
             )
 
     # --------------------------------------------------------
@@ -975,7 +957,7 @@ def draw_model_panel(
 # Legends
 # ============================================================
 
-def draw_reward_legend(
+def draw_reward_legend_entry(
     ax: plt.Axes,
     center_x: float,
     y: float,
@@ -1042,7 +1024,7 @@ def draw_reward_legend(
     )
 
 
-def draw_arrow_legend(
+def draw_transition_legend_entry(
     ax: plt.Axes,
     center_x: float,
     y: float,
@@ -1050,7 +1032,7 @@ def draw_arrow_legend(
     ax.text(
         center_x,
         y + 0.31,
-        "Arrow meaning",
+        "Observed transition probability",
         ha="center",
         va="center",
         fontsize=8.5,
@@ -1058,14 +1040,69 @@ def draw_arrow_legend(
         color=GRAY,
     )
 
+    arrow_y = y + 0.085
+    arrow_specs = [
+        (0.05, "0.05"),
+        (0.25, "0.25"),
+        (0.50, "0.50"),
+        (0.75, "0.75"),
+        (0.95, "0.95"),
+    ]
+    spacing = 0.58
+    first_x = center_x - 2 * spacing
+
+    for index, (probability, label) in enumerate(arrow_specs):
+        x = first_x + index * spacing
+        arrow = FancyArrowPatch(
+            (x - 0.18, arrow_y),
+            (x + 0.18, arrow_y),
+            arrowstyle="-|>",
+            mutation_scale=10,
+            linewidth=2.2,
+            color=transition_color(
+                probability,
+                clip_to_observed_range=False,
+            ),
+            alpha=1.0,
+            zorder=5,
+        )
+        ax.add_patch(arrow)
+        ax.text(
+            x,
+            y - 0.13,
+            label,
+            ha="center",
+            va="center",
+            fontsize=7.2,
+            color=GRAY,
+        )
+
     ax.text(
         center_x,
-        y + 0.085,
-        r"$\longrightarrow$ transition probability $Pr(S_1'\mid S_1,a)$",
+        y - 0.35,
+        r"$P(S_1'\mid S_1,a)$",
         ha="center",
         va="center",
-        fontsize=8.2,
-        color=BLUE_LIGHT,
+        fontsize=8.0,
+        color=GRAY,
+    )
+
+
+def draw_visual_legend(
+    ax: plt.Axes,
+    center_x: float,
+    y: float,
+) -> None:
+    draw_reward_legend_entry(
+        ax=ax,
+        center_x=center_x - 1.85,
+        y=y,
+    )
+
+    draw_transition_legend_entry(
+        ax=ax,
+        center_x=center_x + 1.85,
+        y=y,
     )
 
 
@@ -1104,7 +1141,7 @@ def main() -> None:
         title="Original observed model",
         rewards=data["rewards"],
         results=original_results,
-        transitions=data["transitions"],
+        transitions=data["original_transitions"],
         maximum_absolute_reward=(
             maximum_absolute_reward
         ),
@@ -1116,27 +1153,21 @@ def main() -> None:
         title="Attacker-induced observed model",
         rewards=data["rewards"],
         results=attacked_results,
-        transitions=data["transitions"],
+        transitions=data["attacked_transitions"],
         maximum_absolute_reward=(
             maximum_absolute_reward
         ),
     )
 
-    draw_reward_legend(
+    draw_visual_legend(
         ax=ax,
-        center_x=5.95,
-        y=-3.26,
-    )
-
-    draw_arrow_legend(
-        ax=ax,
-        center_x=8.75,
+        center_x=7.35,
         y=-3.26,
     )
 
     ax.text(
         7.35,
-        -3.68,
+        -3.78,
         (
             r"Each complete Period-1 state has its own "
             r"selected-action arrow. "
@@ -1173,7 +1204,7 @@ def main() -> None:
     )
 
     ax.set_ylim(
-        -3.95,
+        -4.05,
         4.40,
     )
 
