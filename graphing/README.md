@@ -5,10 +5,15 @@
 Renders the two-panel observed-model figure comparing the original observed model
 against the attacker-induced observed model.
 
+`plot_case_values.py`
+
+Renders the value-comparison diagnostic figure. By default this uses Case 1.
+
 Common commands:
 
 ```bash
 python3 graphing/plot_observed_model_case_study.py
+python3 graphing/plot_case_values.py
 ```
 
 `common.py`
