@@ -59,3 +59,17 @@ a1 0.680 0.320
 # action  P(next_S1=0)  P(next_S1=1)
 a0 0.790 0.210
 a1 0.051 0.949
+
+# original_transitions_by_s1
+# s1  action  P(next_S1=0)  P(next_S1=1)
+0 a0 0.680 0.320
+0 a1 0.680 0.320
+1 a0 0.320 0.680
+1 a1 0.320 0.680
+
+# attacked_transitions_by_s1
+# s1  action  P(next_S1=0)  P(next_S1=1)
+0 a0 0.790 0.210
+0 a1 0.051 0.949
+1 a0 0.501 0.499
+1 a1 0.072 0.928

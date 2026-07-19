@@ -17,15 +17,21 @@ from matplotlib.patches import (
     Wedge,
 )
 
+from common import (
+    STATE_ORDER,
+    derive_model_results,
+    read_case_file,
+)
+
 
 # ============================================================
 # Paths
 # ============================================================
 
-INPUT_FILE = Path("graphing/case_study.txt")
+INPUT_FILE = Path("graphing/case_study.json")
 OUTPUT_DIR = Path("outputs/t3")
-PNG_OUTPUT = OUTPUT_DIR / "case_study.png"
-PDF_OUTPUT = OUTPUT_DIR / "case_study.pdf"
+PNG_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}.png"
+PDF_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}.pdf"
 
 
 # ============================================================
@@ -52,259 +58,12 @@ ACTION_DIAMOND_HALF_HEIGHT = 0.18
 TRANSITION_ALPHA = 0.54
 ARROW_LINEWIDTH = 2.6
 
-STATE_ORDER = [
-    "00",
-    "01",
-    "10",
-    "11",
-]
-
 STATE_Y = {
     "00": 1.85,
     "01": 0.65,
     "10": -0.55,
     "11": -1.75,
 }
-
-
-# ============================================================
-# Parse the text file
-# ============================================================
-
-def read_case_file(path: Path) -> dict[str, Any]:
-    if not path.exists():
-        raise FileNotFoundError(
-            f"Input file not found: {path}"
-        )
-
-    data: dict[str, Any] = {}
-    current_section: str | None = None
-
-    known_sections = {
-        "meta",
-        "rewards",
-        "original_values_s1_0",
-        "original_values_s1_1",
-        "attacked_values_s1_0",
-        "attacked_values_s1_1",
-        "original_b",
-        "attacked_b",
-        "original_transitions",
-        "attacked_transitions",
-        "hidden_state_counts",
-        "observed_state_counts",
-        "observed_state_action_counts",
-        "full_state_action_counts",
-        "coverage",
-    }
-
-    with path.open(
-        "r",
-        encoding="utf-8",
-    ) as file:
-        for line_number, raw_line in enumerate(
-            file,
-            start=1,
-        ):
-            line = raw_line.strip()
-
-            if not line:
-                continue
-
-            if line.startswith("#"):
-                heading = line[1:].strip()
-
-                if heading in known_sections:
-                    current_section = heading
-                    data[current_section] = {}
-
-                continue
-
-            if current_section is None:
-                raise ValueError(
-                    f"Line {line_number}: "
-                    "data appears before a section."
-                )
-
-            parts = line.split()
-
-            if current_section == "meta":
-                key = parts[0]
-
-                if key == "target":
-                    data[current_section][key] = (
-                        parts[1],
-                        parts[2],
-                    )
-
-                elif key == "seed":
-                    data[current_section][key] = int(
-                        parts[1]
-                    )
-
-                else:
-                    data[current_section][key] = float(
-                        parts[1]
-                    )
-
-            elif current_section == "rewards":
-                if len(parts) != 3:
-                    raise ValueError(
-                        f"Line {line_number}: "
-                        "reward rows require "
-                        "STATE A0_VALUE A1_VALUE."
-                    )
-
-                state, a0_value, a1_value = parts
-
-                data[current_section][state] = {
-                    "a0": float(a0_value),
-                    "a1": float(a1_value),
-                }
-
-            elif "values_s1_" in current_section:
-                if len(parts) != 3:
-                    raise ValueError(
-                        f"Line {line_number}: "
-                        "sequence rows require "
-                        "FIRST_ACTION SECOND_ACTION VALUE."
-                    )
-
-                first_action, second_action, value = parts
-
-                data[current_section][
-                    (first_action, second_action)
-                ] = float(value)
-
-            elif current_section in {
-                "original_b",
-                "attacked_b",
-            }:
-                if len(parts) != 3:
-                    raise ValueError(
-                        f"Line {line_number}: "
-                        "belief rows require "
-                        "S1 ACTION PROBABILITY."
-                    )
-
-                s1, action, probability = parts
-
-                data[current_section][
-                    (int(s1), action)
-                ] = float(probability)
-
-            elif current_section in {
-                "original_transitions",
-                "attacked_transitions",
-            }:
-                if len(parts) != 3:
-                    raise ValueError(
-                        f"Line {line_number}: "
-                        "transition rows require "
-                        "ACTION P_NEXT_0 P_NEXT_1."
-                    )
-
-                action, p0, p1 = parts
-
-                data[current_section][action] = {
-                    0: float(p0),
-                    1: float(p1),
-                }
-
-    validate_input(data)
-
-    return data
-
-
-def validate_input(
-    data: dict[str, Any],
-) -> None:
-    required_sections = {
-        "meta",
-        "rewards",
-        "original_values_s1_0",
-        "original_values_s1_1",
-        "attacked_values_s1_0",
-        "attacked_values_s1_1",
-        "original_b",
-        "attacked_b",
-        "original_transitions",
-        "attacked_transitions",
-    }
-
-    missing = required_sections.difference(data)
-
-    if missing:
-        raise ValueError(
-            "Missing sections: "
-            + ", ".join(sorted(missing))
-        )
-
-    expected_states = set(STATE_ORDER)
-
-    if set(data["rewards"]) != expected_states:
-        raise ValueError(
-            "Rewards must be supplied for states "
-            "00, 01, 10, and 11."
-        )
-
-    expected_sequences = {
-        ("a0", "a0"),
-        ("a0", "a1"),
-        ("a1", "a0"),
-        ("a1", "a1"),
-    }
-
-    for section in (
-        "original_values_s1_0",
-        "original_values_s1_1",
-        "attacked_values_s1_0",
-        "attacked_values_s1_1",
-    ):
-        if set(data[section]) != expected_sequences:
-            raise ValueError(
-                f"{section} must contain "
-                "all four open-loop sequences."
-            )
-
-
-# ============================================================
-# Derive optimal sequences
-# ============================================================
-
-def best_sequence(
-    values: dict[tuple[str, str], float],
-) -> tuple[tuple[str, str], float]:
-    sequence = max(
-        values,
-        key=values.get,
-    )
-
-    return sequence, values[sequence]
-
-
-def derive_model_results(
-    data: dict[str, Any],
-    prefix: str,
-) -> dict[int, dict[str, Any]]:
-    results: dict[int, dict[str, Any]] = {}
-
-    for initial_s1 in (0, 1):
-        section = (
-            f"{prefix}_values_s1_{initial_s1}"
-        )
-
-        sequence, value = best_sequence(
-            data[section]
-        )
-
-        results[initial_s1] = {
-            "sequence": sequence,
-            "value": value,
-            "all_values": data[section],
-        }
-
-    return results
 
 
 # ============================================================
