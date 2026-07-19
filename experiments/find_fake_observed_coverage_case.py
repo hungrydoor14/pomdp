@@ -6,17 +6,21 @@ from itertools import product
 import numpy as np
 
 from find_transition_mislearning_case import (
-    Candidate,
     induced_observed_transition,
+    make_hidden_dependent_transition,
     prior_b_vector,
-    search,
     sequence_values,
+    transition_shift,
+    tstar_changed,
 )
 
 
 NUM_S1 = 2
 NUM_S2 = 2
 NUM_ACTIONS = 2
+ACTION_CONTROL = 0.80
+ACTION_EFFECT = 0.10
+HIDDEN_EFFECT = 0.85
 
 
 def join_state(s1: int, s2: int) -> int:
@@ -32,6 +36,15 @@ class CoverageCase:
     seed: int
     state_counts: np.ndarray
     action_counts: np.ndarray
+
+
+@dataclass(frozen=True)
+class CoverageModelCase:
+    seed: int
+    rewards: np.ndarray
+    transitions: np.ndarray
+    attacked_b: np.ndarray
+    transition_shift: float
 
 
 def sample_dataset(
@@ -123,16 +136,109 @@ def find_case(
     raise RuntimeError("No fake observed-coverage case found.")
 
 
-def print_observed_model_sections(candidate: Candidate) -> None:
+def empirical_b_from_counts(action_counts: np.ndarray) -> np.ndarray:
+    b = np.zeros(NUM_S1 * NUM_ACTIONS)
+
+    for s1, action in product(range(NUM_S1), range(NUM_ACTIONS)):
+        action_total = int(action_counts[s1, :, action].sum())
+
+        if action_total == 0:
+            b[s1 * NUM_ACTIONS + action] = prior_b_vector()[
+                s1 * NUM_ACTIONS + action
+            ]
+            continue
+
+        hidden_one_count = int(action_counts[s1, 1, action])
+        b[s1 * NUM_ACTIONS + action] = hidden_one_count / action_total
+
+    return b
+
+
+def find_model_case(
+    coverage_case: CoverageCase,
+) -> CoverageModelCase:
+    original_b = prior_b_vector()
+    attacked_b = empirical_b_from_counts(coverage_case.action_counts)
+
+    transitions = make_hidden_dependent_transition(
+        hidden_effect=HIDDEN_EFFECT,
+        action_effect=ACTION_EFFECT,
+        action_control=ACTION_CONTROL,
+    )
+
+    best: CoverageModelCase | None = None
+
+    for seed in range(1, 5_000):
+        rng = np.random.default_rng(seed)
+        rewards = rng.normal(
+            0.0,
+            1.0,
+            size=(NUM_S1, NUM_S2, NUM_ACTIONS),
+        )
+
+        if not tstar_changed(
+            rewards,
+            transitions,
+            original_b,
+            attacked_b,
+        ):
+            continue
+
+        shift = transition_shift(
+            transitions,
+            original_b,
+            attacked_b,
+        )
+
+        candidate = CoverageModelCase(
+            seed=seed,
+            rewards=rewards,
+            transitions=transitions,
+            attacked_b=attacked_b,
+            transition_shift=shift,
+        )
+
+        if best is None or candidate.transition_shift > best.transition_shift:
+            best = candidate
+
+        if shift >= 0.50:
+            return candidate
+
+    if best is None:
+        raise RuntimeError("No fake-coverage model case found.")
+
+    return best
+
+
+def best_common_target(
+    rewards: np.ndarray,
+    transitions: np.ndarray,
+    attacked_b: np.ndarray,
+) -> tuple[int, int]:
+    values = sequence_values(
+        rewards,
+        transitions,
+        attacked_b,
+        0,
+    )
+    return max(values, key=lambda item: item[1])[0]
+
+
+def print_observed_model_sections(candidate: CoverageModelCase) -> None:
     original_b = prior_b_vector()
     attacked_b = candidate.attacked_b
+    target = best_common_target(
+        candidate.rewards,
+        candidate.transitions,
+        attacked_b,
+    )
 
     print("# meta")
     print(f"seed {candidate.seed}")
-    print(f"control {candidate.action_control:.2f}")
-    print(f"obs_info {candidate.hidden_effect:.2f}")
-    print("target a1 a1")
-    print(f"margin {candidate.max_transition_shift:.3f}")
+    print(f"control {ACTION_CONTROL:.2f}")
+    print(f"obs_info {HIDDEN_EFFECT:.2f}")
+    print(f"target a{target[0]} a{target[1]}")
+    print(f"margin {candidate.transition_shift:.3f}")
     print()
 
     print("# rewards")
@@ -193,13 +299,45 @@ def print_observed_model_sections(candidate: Candidate) -> None:
             print(f"a{action} {transition[0]:.3f} {transition[1]:.3f}")
         print()
 
+    for section, b in (
+        ("original_transitions_by_s1", original_b),
+        ("attacked_transitions_by_s1", attacked_b),
+    ):
+        print(f"# {section}")
+        print("# s1  action  P(next_S1=0)  P(next_S1=1)")
+        for s1, action in product(range(NUM_S1), range(NUM_ACTIONS)):
+            transition = induced_observed_transition(
+                candidate.transitions,
+                b,
+                s1,
+                action,
+            )
+            print(f"{s1} a{action} {transition[0]:.3f} {transition[1]:.3f}")
+        print()
+
+
+def print_attacker_policy_from_counts(case: CoverageCase) -> None:
+    print("# attacker_policy")
+    print("# state  pi_dagger(a1 | S1,S2)")
+    for s1, s2 in product(range(NUM_S1), range(NUM_S2)):
+        state_total = int(case.action_counts[s1, s2, :].sum())
+
+        if state_total == 0:
+            print(f"{s1}{s2} nan")
+            continue
+
+        probability_a1 = case.action_counts[s1, s2, 1] / state_total
+        print(f"{s1}{s2} {probability_a1:.6f}")
+    print()
+
 
 def print_case_file(
-    candidate: Candidate,
+    candidate: CoverageModelCase,
     case: CoverageCase,
 ) -> None:
     print_observed_model_sections(candidate)
     print()
+    print_attacker_policy_from_counts(case)
 
     print("# hidden_state_counts")
     print("# state  count")
@@ -239,9 +377,10 @@ def print_case_file(
 
 
 def main() -> None:
+    coverage_case = find_case()
     print_case_file(
-        candidate=search(),
-        case=find_case(),
+        candidate=find_model_case(coverage_case),
+        case=coverage_case,
     )
 
 
