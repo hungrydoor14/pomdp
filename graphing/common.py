@@ -1,9 +1,6 @@
-from __future__ import annotations
-
 import json
 import math
 from pathlib import Path
-from typing import Any
 
 
 ACTIONS = [
@@ -26,11 +23,9 @@ SEQUENCES = [
 ]
 
 
-def read_case_file(path: Path) -> dict[str, Any]:
+def read_case_file(path):
     if not path.exists():
-        raise FileNotFoundError(
-            f"Input file not found: {path}"
-        )
+        raise FileNotFoundError(f"Input file not found: {path}")
 
     if path.suffix == ".json":
         return read_json_case_file(path)
@@ -38,9 +33,9 @@ def read_case_file(path: Path) -> dict[str, Any]:
     return read_text_case_file(path)
 
 
-def read_text_case_file(path: Path) -> dict[str, Any]:
-    data: dict[str, Any] = {}
-    current_section: str | None = None
+def read_text_case_file(path):
+    data = {}
+    current_section = None
 
     known_sections = {
         "meta",
@@ -86,111 +81,61 @@ def read_text_case_file(path: Path) -> dict[str, Any]:
                 continue
 
             if current_section is None:
-                raise ValueError(
-                    f"Line {line_number}: "
-                    "data appears before a section."
-                )
+                raise ValueError(f"Line {line_number}: " "data appears before a section.")
 
             parts = line.split()
 
             if current_section == "meta":
-                parse_meta_row(
-                    data[current_section],
-                    parts,
-                )
+                parse_meta_row(data[current_section], parts)
 
             elif current_section == "rewards":
-                parse_reward_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_reward_row(data[current_section], parts, line_number)
 
             elif "values_s1_" in current_section:
-                parse_value_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_value_row(data[current_section], parts, line_number)
 
             elif current_section in {
                 "original_b",
                 "attacked_b",
             }:
-                parse_belief_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_belief_row(data[current_section], parts, line_number)
 
             elif current_section in {
                 "original_transitions",
                 "attacked_transitions",
             }:
-                parse_action_transition_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_action_transition_row(data[current_section], parts, line_number)
 
             elif current_section in {
                 "original_transitions_by_s1",
                 "attacked_transitions_by_s1",
             }:
-                parse_state_action_transition_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_state_action_transition_row(data[current_section], parts, line_number)
 
             elif current_section == "attacker_policy":
-                parse_attacker_policy_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_attacker_policy_row(data[current_section], parts, line_number)
 
             elif current_section == "hidden_state_counts":
-                parse_hidden_state_count_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_hidden_state_count_row(data[current_section], parts, line_number)
 
             elif current_section == "observed_state_counts":
-                parse_observed_state_count_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_observed_state_count_row(data[current_section], parts, line_number)
 
             elif current_section == "observed_state_action_counts":
-                parse_observed_state_action_count_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_observed_state_action_count_row(data[current_section], parts, line_number)
 
             elif current_section == "full_state_action_counts":
-                parse_full_state_action_count_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_full_state_action_count_row(data[current_section], parts, line_number)
 
             elif current_section == "coverage":
-                parse_coverage_row(
-                    data[current_section],
-                    parts,
-                    line_number,
-                )
+                parse_coverage_row(data[current_section], parts, line_number)
 
     validate_input(data)
 
     return data
 
 
-def read_json_case_file(path: Path) -> dict[str, Any]:
+def read_json_case_file(path):
     with path.open(
         "r",
         encoding="utf-8",
@@ -203,49 +148,31 @@ def read_json_case_file(path: Path) -> dict[str, Any]:
     return data
 
 
-def write_json_case_file(
-    data: dict[str, Any],
-    path: Path,
-) -> None:
+def write_json_case_file(data, path):
     validate_input(data)
     json_data = case_to_json(data)
 
-    path.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    path.parent.mkdir(parents=True, exist_ok=True)
 
     with path.open(
         "w",
         encoding="utf-8",
     ) as file:
-        json.dump(
-            json_data,
-            file,
-            indent=2,
-            sort_keys=False,
-            allow_nan=True,
-        )
+        json.dump(json_data, file, indent=2, sort_keys=False, allow_nan=True)
         file.write("\n")
 
 
-def sequence_key(
-    sequence: tuple[str, str],
-) -> str:
+def sequence_key(sequence):
     return ",".join(sequence)
 
 
-def parse_sequence_key(
-    key: str,
-) -> tuple[str, str]:
+def parse_sequence_key(key):
     first_action, second_action = key.split(",")
     return first_action, second_action
 
 
-def case_to_json(
-    data: dict[str, Any],
-) -> dict[str, Any]:
-    json_data: dict[str, Any] = {
+def case_to_json(data):
+    json_data = {
         "meta": data["meta"],
         "rewards": data["rewards"],
         "values": {
@@ -344,19 +271,15 @@ def case_to_json(
     return json_data
 
 
-def json_safe_value(
-    value: Any,
-) -> Any:
+def json_safe_value(value):
     if isinstance(value, float) and math.isnan(value):
         return None
 
     return value
 
 
-def normalize_json_case(
-    raw_data: dict[str, Any],
-) -> dict[str, Any]:
-    data: dict[str, Any] = {
+def normalize_json_case(raw_data):
+    data = {
         "meta": normalize_meta(raw_data["meta"]),
         "rewards": raw_data["rewards"],
     }
@@ -371,9 +294,7 @@ def normalize_json_case(
             }
 
         data[f"{prefix}_b"] = {
-            (s1, action): float(
-                raw_data["b"][prefix][str(s1)][action]
-            )
+            (s1, action): float(raw_data["b"][prefix][str(s1)][action])
             for s1 in (0, 1)
             for action in ACTIONS
         }
@@ -456,9 +377,7 @@ def normalize_json_case(
     return data
 
 
-def normalize_meta(
-    meta: dict[str, Any],
-) -> dict[str, Any]:
+def normalize_meta(meta):
     normalized = dict(meta)
 
     if "target" in normalized:
@@ -481,17 +400,11 @@ def normalize_meta(
     return normalized
 
 
-def parse_meta_row(
-    section: dict[str, Any],
-    parts: list[str],
-) -> None:
+def parse_meta_row(section, parts):
     key = parts[0]
 
     if key == "target":
-        section[key] = (
-            parts[1],
-            parts[2],
-        )
+        section[key] = (parts[1], parts[2])
 
     elif key == "seed":
         section[key] = int(parts[1])
@@ -503,17 +416,9 @@ def parse_meta_row(
         section[key] = float(parts[1])
 
 
-def parse_reward_row(
-    section: dict[str, dict[str, float]],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_reward_row(section, parts, line_number):
     if len(parts) != 3:
-        raise ValueError(
-            f"Line {line_number}: "
-            "reward rows require "
-            "STATE A0_VALUE A1_VALUE."
-        )
+        raise ValueError(f"Line {line_number}: " "reward rows require " "STATE A0_VALUE A1_VALUE.")
 
     state, a0_value, a1_value = parts
 
@@ -523,11 +428,7 @@ def parse_reward_row(
     }
 
 
-def parse_value_row(
-    section: dict[tuple[str, str], float],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_value_row(section, parts, line_number):
     if len(parts) != 3:
         raise ValueError(
             f"Line {line_number}: "
@@ -540,28 +441,16 @@ def parse_value_row(
     section[(first_action, second_action)] = float(value)
 
 
-def parse_belief_row(
-    section: dict[tuple[int, str], float],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_belief_row(section, parts, line_number):
     if len(parts) != 3:
-        raise ValueError(
-            f"Line {line_number}: "
-            "belief rows require "
-            "S1 ACTION PROBABILITY."
-        )
+        raise ValueError(f"Line {line_number}: " "belief rows require " "S1 ACTION PROBABILITY.")
 
     s1, action, probability = parts
 
     section[(int(s1), action)] = float(probability)
 
 
-def parse_action_transition_row(
-    section: dict[str, dict[int, float]],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_action_transition_row(section, parts, line_number):
     if len(parts) != 3:
         raise ValueError(
             f"Line {line_number}: "
@@ -577,11 +466,7 @@ def parse_action_transition_row(
     }
 
 
-def parse_state_action_transition_row(
-    section: dict[tuple[int, str], dict[int, float]],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_state_action_transition_row(section, parts, line_number):
     if len(parts) != 4:
         raise ValueError(
             f"Line {line_number}: "
@@ -597,11 +482,7 @@ def parse_state_action_transition_row(
     }
 
 
-def parse_attacker_policy_row(
-    section: dict[str, float],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_attacker_policy_row(section, parts, line_number):
     if len(parts) != 2:
         raise ValueError(
             f"Line {line_number}: "
@@ -618,43 +499,23 @@ def parse_attacker_policy_row(
     )
 
 
-def parse_hidden_state_count_row(
-    section: dict[str, int],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_hidden_state_count_row(section, parts, line_number):
     if len(parts) != 2:
-        raise ValueError(
-            f"Line {line_number}: "
-            "hidden-state count rows require "
-            "STATE COUNT."
-        )
+        raise ValueError(f"Line {line_number}: " "hidden-state count rows require " "STATE COUNT.")
 
     state, count = parts
     section[state] = int(count)
 
 
-def parse_observed_state_count_row(
-    section: dict[int, int],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_observed_state_count_row(section, parts, line_number):
     if len(parts) != 2:
-        raise ValueError(
-            f"Line {line_number}: "
-            "observed-state count rows require "
-            "S1 COUNT."
-        )
+        raise ValueError(f"Line {line_number}: " "observed-state count rows require " "S1 COUNT.")
 
     s1, count = parts
     section[int(s1)] = int(count)
 
 
-def parse_observed_state_action_count_row(
-    section: dict[tuple[int, str], int],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_observed_state_action_count_row(section, parts, line_number):
     if len(parts) != 3:
         raise ValueError(
             f"Line {line_number}: "
@@ -666,11 +527,7 @@ def parse_observed_state_action_count_row(
     section[(int(s1), action)] = int(count)
 
 
-def parse_full_state_action_count_row(
-    section: dict[tuple[str, str], int],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_full_state_action_count_row(section, parts, line_number):
     if len(parts) != 3:
         raise ValueError(
             f"Line {line_number}: "
@@ -682,25 +539,15 @@ def parse_full_state_action_count_row(
     section[(state, action)] = int(count)
 
 
-def parse_coverage_row(
-    section: dict[str, bool],
-    parts: list[str],
-    line_number: int,
-) -> None:
+def parse_coverage_row(section, parts, line_number):
     if len(parts) != 2:
-        raise ValueError(
-            f"Line {line_number}: "
-            "coverage rows require "
-            "QUANTITY COVERED."
-        )
+        raise ValueError(f"Line {line_number}: " "coverage rows require " "QUANTITY COVERED.")
 
     quantity, covered = parts
     section[quantity] = covered in {"1", "true", "True"}
 
 
-def validate_input(
-    data: dict[str, Any],
-) -> None:
+def validate_input(data):
     required_sections = {
         "meta",
         "rewards",
@@ -717,18 +564,12 @@ def validate_input(
     missing = required_sections.difference(data)
 
     if missing:
-        raise ValueError(
-            "Missing sections: "
-            + ", ".join(sorted(missing))
-        )
+        raise ValueError("Missing sections: " + ", ".join(sorted(missing)))
 
     expected_states = set(STATE_ORDER)
 
     if set(data["rewards"]) != expected_states:
-        raise ValueError(
-            "Rewards must be supplied for states "
-            "00, 01, 10, and 11."
-        )
+        raise ValueError("Rewards must be supplied for states " "00, 01, 10, and 11.")
 
     expected_sequences = set(SEQUENCES)
 
@@ -739,37 +580,22 @@ def validate_input(
         "attacked_values_s1_1",
     ):
         if set(data[section]) != expected_sequences:
-            raise ValueError(
-                f"{section} must contain "
-                "all four open-loop sequences."
-            )
+            raise ValueError(f"{section} must contain " "all four open-loop sequences.")
 
 
-def best_sequence(
-    values: dict[tuple[str, str], float],
-) -> tuple[tuple[str, str], float]:
-    sequence = max(
-        values,
-        key=values.get,
-    )
+def best_sequence(values):
+    sequence = max(values, key=values.get)
 
     return sequence, values[sequence]
 
 
-def derive_model_results(
-    data: dict[str, Any],
-    prefix: str,
-) -> dict[int, dict[str, Any]]:
-    results: dict[int, dict[str, Any]] = {}
+def derive_model_results(data, prefix):
+    results = {}
 
     for initial_s1 in (0, 1):
-        section = (
-            f"{prefix}_values_s1_{initial_s1}"
-        )
+        section = (f"{prefix}_values_s1_{initial_s1}")
 
-        sequence, value = best_sequence(
-            data[section]
-        )
+        sequence, value = best_sequence(data[section])
 
         results[initial_s1] = {
             "sequence": sequence,

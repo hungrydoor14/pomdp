@@ -1,8 +1,5 @@
-from __future__ import annotations
-
 import os
 from pathlib import Path
-from typing import Any
 
 os.environ.setdefault("MPLBACKEND", "Agg")
 os.environ.setdefault("MPLCONFIGDIR", "/private/tmp/matplotlib")
@@ -23,6 +20,24 @@ from common import (
     read_case_file,
 )
 
+from style import (
+    ACTION_DIAMOND_HALF_HEIGHT,
+    ACTION_DIAMOND_HALF_WIDTH,
+    ARROW_LINEWIDTH,
+    BLUE,
+    GRAY,
+    LIGHT_GRAY,
+    NEGATIVE_BASE,
+    NODE_RADIUS,
+    PANEL_EDGE,
+    PANEL_FILL,
+    POSITIVE_BASE,
+    RED,
+    TRANSITION_CMAP,
+    TRANSITION_COLOR_MAX,
+    TRANSITION_COLOR_MIN,
+)
+
 
 # ============================================================
 # Paths
@@ -38,26 +53,6 @@ PDF_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}.pdf"
 # Visual configuration
 # ============================================================
 
-BLUE = "#174EA6"
-BLUE_LIGHT = "#4F7DFF"
-RED = "#C62828"
-GRAY = "#606975"
-LIGHT_GRAY = "#D5D9E0"
-PANEL_EDGE = "#AEB5C0"
-PANEL_FILL = "#FCFCFD"
-
-POSITIVE_BASE = "#2457FF"
-NEGATIVE_BASE = "#F28C28"
-TRANSITION_CMAP = "viridis"
-TRANSITION_COLOR_MIN = 0.35
-TRANSITION_COLOR_MAX = 0.65
-
-NODE_RADIUS = 0.43
-ACTION_DIAMOND_HALF_WIDTH = 0.25
-ACTION_DIAMOND_HALF_HEIGHT = 0.18
-TRANSITION_ALPHA = 0.54
-ARROW_LINEWIDTH = 2.6
-
 STATE_Y = {
     "00": 1.85,
     "01": 0.65,
@@ -70,17 +65,11 @@ STATE_Y = {
 # Reward color encoding
 # ============================================================
 
-def mix_with_white(
-    base_color: str,
-    intensity: float,
-) -> tuple[float, float, float]:
+def mix_with_white(base_color, intensity):
     base_rgb = colors.to_rgb(base_color)
     white_rgb = colors.to_rgb("#FFFFFF")
 
-    intensity = max(
-        0.0,
-        min(1.0, intensity),
-    )
+    intensity = max(0.0, min(1.0, intensity))
 
     return tuple(
         white_component * (1.0 - intensity)
@@ -90,18 +79,12 @@ def mix_with_white(
     )
 
 
-def reward_color(
-    value: float,
-    maximum_absolute_reward: float,
-) -> tuple[float, float, float]:
+def reward_color(value, maximum_absolute_reward):
     if maximum_absolute_reward <= 0:
         normalized = 0.0
 
     else:
-        normalized = min(
-            abs(value) / maximum_absolute_reward,
-            1.0,
-        )
+        normalized = min(abs(value) / maximum_absolute_reward, 1.0)
 
     intensity = 0.16 + 0.84 * normalized
 
@@ -111,17 +94,10 @@ def reward_color(
         else NEGATIVE_BASE
     )
 
-    return mix_with_white(
-        base,
-        intensity,
-    )
+    return mix_with_white(base, intensity)
 
 
-def transition_color(
-    probability: float,
-    *,
-    clip_to_observed_range: bool = True,
-) -> tuple[float, float, float, float]:
+def transition_color(probability, *, clip_to_observed_range=True):
     cmap = plt.get_cmap(TRANSITION_CMAP)
 
     if clip_to_observed_range:
@@ -133,10 +109,7 @@ def transition_color(
     else:
         scaled_probability = probability
 
-    scaled_probability = max(
-        0.0,
-        min(1.0, scaled_probability),
-    )
+    scaled_probability = max(0.0, min(1.0, scaled_probability))
 
     return cmap(scaled_probability)
 
@@ -145,13 +118,7 @@ def transition_color(
 # Drawing helpers
 # ============================================================
 
-def draw_panel_background(
-    ax: plt.Axes,
-    left: float,
-    bottom: float,
-    width: float,
-    height: float,
-) -> None:
+def draw_panel_background(ax, left, bottom, width, height):
     panel = FancyBboxPatch(
         (left, bottom),
         width,
@@ -169,29 +136,15 @@ def draw_panel_background(
     ax.add_patch(panel)
 
 
-def draw_state_node(
-    ax: plt.Axes,
-    x: float,
-    y: float,
-    state: str,
-    rewards: dict[str, float],
-    selected_action: str,
-    maximum_absolute_reward: float,
-) -> None:
+def draw_state_node(ax, x, y, state, rewards, selected_action, maximum_absolute_reward):
     """
     Left half  = reward under a0.
     Right half = reward under a1.
     """
 
-    left_color = reward_color(
-        rewards["a0"],
-        maximum_absolute_reward,
-    )
+    left_color = reward_color(rewards["a0"], maximum_absolute_reward)
 
-    right_color = reward_color(
-        rewards["a1"],
-        maximum_absolute_reward,
-    )
+    right_color = reward_color(rewards["a1"], maximum_absolute_reward)
 
     left_half = Wedge(
         (x, y),
@@ -310,13 +263,7 @@ def draw_state_node(
     ax.add_patch(selected_arc)
 
 
-def draw_vertical_state_column(
-    ax: plt.Axes,
-    x: float,
-    rewards: dict[str, dict[str, float]],
-    selected_actions: dict[int, str],
-    maximum_absolute_reward: float,
-) -> None:
+def draw_vertical_state_column(ax, x, rewards, selected_actions, maximum_absolute_reward):
     ax.plot(
         [x, x],
         [
@@ -346,12 +293,7 @@ def draw_vertical_state_column(
         )
 
 
-def draw_action_diamond(
-    ax: plt.Axes,
-    x: float,
-    y: float,
-    action: str,
-) -> None:
+def draw_action_diamond(ax, x, y, action):
     action_index = action[-1]
 
     diamond = Polygon(
@@ -383,13 +325,7 @@ def draw_action_diamond(
     )
 
 
-def draw_selected_action_arrow(
-    ax: plt.Axes,
-    source_x: float,
-    source_y: float,
-    diamond_x: float,
-    diamond_y: float,
-) -> None:
+def draw_selected_action_arrow(ax, source_x, source_y, diamond_x, diamond_y):
     arrow = FancyArrowPatch(
         (
             source_x + NODE_RADIUS,
@@ -411,12 +347,7 @@ def draw_selected_action_arrow(
     ax.add_patch(arrow)
 
 
-def draw_probability_arrow(
-    ax: plt.Axes,
-    start: tuple[float, float],
-    end: tuple[float, float],
-    probability: float,
-) -> None:
+def draw_probability_arrow(ax, start, end, probability):
     """
     Draw a straight observed-transition arrow.
     """
@@ -434,10 +365,7 @@ def draw_probability_arrow(
     ax.add_patch(arrow)
 
 
-def target_state_for_transition(
-    source_state: str,
-    next_s1: int,
-) -> str:
+def target_state_for_transition(source_state, next_s1):
     """
     The printed transition data determines the next observed state S1',
     but not a full next hidden state.
@@ -454,13 +382,7 @@ def target_state_for_transition(
     return f"{next_s1}{source_s2}"
 
 
-def draw_four_state_transition_structure(
-    ax: plt.Axes,
-    period1_x: float,
-    period2_x: float,
-    results: dict[int, dict[str, Any]],
-    transitions: dict[str, dict[int, float]],
-) -> None:
+def draw_four_state_transition_structure(ax, period1_x, period2_x, results, transitions):
     """
     Give each complete Period-1 state its own selected-action arrow,
     action diamond, and two straight transition arrows.
@@ -469,10 +391,7 @@ def draw_four_state_transition_structure(
     in the legend, keeping the crossing arrows readable.
     """
 
-    diamond_x = (
-        period1_x
-        + 0.42 * (period2_x - period1_x)
-    )
+    diamond_x = (period1_x + 0.42 * (period2_x - period1_x))
 
     for source_state in STATE_ORDER:
         observed_s1 = int(source_state[0])
@@ -486,29 +405,15 @@ def draw_four_state_transition_structure(
         for next_s1 in (0, 1):
             probability = transitions[first_action][next_s1]
 
-            target_state = target_state_for_transition(
-                source_state,
-                next_s1,
-            )
+            target_state = target_state_for_transition(source_state, next_s1)
 
             target_y = STATE_Y[target_state]
 
-            start = (
-                diamond_x + 0.26,
-                diamond_y,
-            )
+            start = (diamond_x + 0.26, diamond_y)
 
-            end = (
-                period2_x - NODE_RADIUS - 0.05,
-                target_y,
-            )
+            end = (period2_x - NODE_RADIUS - 0.05, target_y)
 
-            draw_probability_arrow(
-                ax=ax,
-                start=start,
-                end=end,
-                probability=probability,
-            )
+            draw_probability_arrow(ax=ax, start=start, end=end, probability=probability)
 
     # --------------------------------------------------------
     # Draw selected actions afterward so they stay visible.
@@ -522,12 +427,7 @@ def draw_four_state_transition_structure(
 
         source_y = STATE_Y[source_state]
 
-        draw_action_diamond(
-            ax=ax,
-            x=diamond_x,
-            y=source_y,
-            action=first_action,
-        )
+        draw_action_diamond(ax=ax, x=diamond_x, y=source_y, action=first_action)
 
         draw_selected_action_arrow(
             ax=ax,
@@ -541,38 +441,23 @@ def draw_four_state_transition_structure(
 # Sequence summary
 # ============================================================
 
-def format_sequence(
-    sequence: tuple[str, str],
-) -> str:
+def format_sequence(sequence):
     first = sequence[0][-1]
     second = sequence[1][-1]
 
     return rf"$(a_{first},a_{second})$"
 
 
-def draw_sequence_value_box(
-    ax: plt.Axes,
-    center_x: float,
-    bottom_y: float,
-    results: dict[int, dict[str, Any]],
-) -> None:
+def draw_sequence_value_box(ax, center_x, bottom_y, results):
     sequence_0 = results[0]["sequence"]
     sequence_1 = results[1]["sequence"]
 
     value_0 = results[0]["value"]
     value_1 = results[1]["value"]
 
-    line_1 = (
-        rf"$s_1=0$: "
-        rf"{format_sequence(sequence_0)}, "
-        rf"value $={value_0:.3f}$"
-    )
+    line_1 = (rf"$s_1=0$: " rf"{format_sequence(sequence_0)}, " rf"value $={value_0:.3f}$")
 
-    line_2 = (
-        rf"$s_1=1$: "
-        rf"{format_sequence(sequence_1)}, "
-        rf"value $={value_1:.3f}$"
-    )
+    line_2 = (rf"$s_1=1$: " rf"{format_sequence(sequence_1)}, " rf"value $={value_1:.3f}$")
 
     ax.text(
         center_x,
@@ -596,15 +481,7 @@ def draw_sequence_value_box(
 # Model panel
 # ============================================================
 
-def draw_model_panel(
-    ax: plt.Axes,
-    panel_left: float,
-    title: str,
-    rewards: dict[str, dict[str, float]],
-    results: dict[int, dict[str, Any]],
-    transitions: dict[str, dict[int, float]],
-    maximum_absolute_reward: float,
-) -> None:
+def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maximum_absolute_reward):
     panel_width = 7.10
     panel_bottom = -2.65
     panel_height = 5.75
@@ -617,9 +494,7 @@ def draw_model_panel(
         height=panel_height,
     )
 
-    panel_center = (
-        panel_left + panel_width / 2
-    )
+    panel_center = (panel_left + panel_width / 2)
 
     period1_x = panel_left + 1.05
     period2_x = panel_left + 6.05
@@ -698,23 +573,14 @@ def draw_model_panel(
         ),
     )
 
-    draw_sequence_value_box(
-        ax=ax,
-        center_x=panel_center,
-        bottom_y=-2.31,
-        results=results,
-    )
+    draw_sequence_value_box(ax=ax, center_x=panel_center, bottom_y=-2.31, results=results)
 
 
 # ============================================================
 # Legends
 # ============================================================
 
-def draw_reward_legend_entry(
-    ax: plt.Axes,
-    center_x: float,
-    y: float,
-) -> None:
+def draw_reward_legend_entry(ax, center_x, y):
     values = [
         -1.0,
         -0.4,
@@ -777,11 +643,7 @@ def draw_reward_legend_entry(
     )
 
 
-def draw_transition_legend_entry(
-    ax: plt.Axes,
-    center_x: float,
-    y: float,
-) -> None:
+def draw_transition_legend_entry(ax, center_x, y):
     ax.text(
         center_x,
         y + 0.31,
@@ -820,15 +682,7 @@ def draw_transition_legend_entry(
             zorder=5,
         )
         ax.add_patch(arrow)
-        ax.text(
-            x,
-            y - 0.13,
-            label,
-            ha="center",
-            va="center",
-            fontsize=7.2,
-            color=GRAY,
-        )
+        ax.text(x, y - 0.13, label, ha="center", va="center", fontsize=7.2, color=GRAY)
 
     ax.text(
         center_x,
@@ -841,40 +695,22 @@ def draw_transition_legend_entry(
     )
 
 
-def draw_visual_legend(
-    ax: plt.Axes,
-    center_x: float,
-    y: float,
-) -> None:
-    draw_reward_legend_entry(
-        ax=ax,
-        center_x=center_x - 1.85,
-        y=y,
-    )
+def draw_visual_legend(ax, center_x, y):
+    draw_reward_legend_entry(ax=ax, center_x=center_x - 1.85, y=y)
 
-    draw_transition_legend_entry(
-        ax=ax,
-        center_x=center_x + 1.85,
-        y=y,
-    )
+    draw_transition_legend_entry(ax=ax, center_x=center_x + 1.85, y=y)
 
 
 # ============================================================
 # Main
 # ============================================================
 
-def main() -> None:
+def main():
     data = read_case_file(INPUT_FILE)
 
-    original_results = derive_model_results(
-        data,
-        "original",
-    )
+    original_results = derive_model_results(data, "original")
 
-    attacked_results = derive_model_results(
-        data,
-        "attacked",
-    )
+    attacked_results = derive_model_results(data, "attacked")
 
     maximum_absolute_reward = max(
         abs(value)
@@ -884,9 +720,7 @@ def main() -> None:
         in state_rewards.values()
     )
 
-    fig, ax = plt.subplots(
-        figsize=(18.5, 8.0),
-    )
+    fig, ax = plt.subplots(figsize=(18.5, 8.0))
 
     draw_model_panel(
         ax=ax,
@@ -912,11 +746,7 @@ def main() -> None:
         ),
     )
 
-    draw_visual_legend(
-        ax=ax,
-        center_x=7.35,
-        y=-3.26,
-    )
+    draw_visual_legend(ax=ax, center_x=7.35, y=-3.26)
 
     ax.text(
         7.35,
@@ -951,60 +781,28 @@ def main() -> None:
         color=GRAY,
     )
 
-    ax.set_xlim(
-        -0.35,
-        15.05,
-    )
+    ax.set_xlim(-0.35, 15.05)
 
-    ax.set_ylim(
-        -4.05,
-        4.40,
-    )
+    ax.set_ylim(-4.05, 4.40)
 
     ax.set_aspect("equal")
     ax.axis("off")
 
-    OUTPUT_DIR.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    fig.savefig(
-        PNG_OUTPUT,
-        dpi=300,
-        bbox_inches="tight",
-        pad_inches=0.12,
-        facecolor="white",
-    )
+    fig.savefig(PNG_OUTPUT, dpi=300, bbox_inches="tight", pad_inches=0.12, facecolor="white")
 
-    fig.savefig(
-        PDF_OUTPUT,
-        bbox_inches="tight",
-        pad_inches=0.12,
-        facecolor="white",
-    )
+    fig.savefig(PDF_OUTPUT, bbox_inches="tight", pad_inches=0.12, facecolor="white")
 
     plt.close(fig)
 
-    print(
-        "Original best sequence at s1=0:",
-        original_results[0]["sequence"],
-    )
+    print("Original best sequence at s1=0:", original_results[0]["sequence"])
 
-    print(
-        "Original best sequence at s1=1:",
-        original_results[1]["sequence"],
-    )
+    print("Original best sequence at s1=1:", original_results[1]["sequence"])
 
-    print(
-        "Attacked best sequence at s1=0:",
-        attacked_results[0]["sequence"],
-    )
+    print("Attacked best sequence at s1=0:", attacked_results[0]["sequence"])
 
-    print(
-        "Attacked best sequence at s1=1:",
-        attacked_results[1]["sequence"],
-    )
+    print("Attacked best sequence at s1=1:", attacked_results[1]["sequence"])
 
     print(f"Input: {INPUT_FILE}")
     print(f"Saved PNG: {PNG_OUTPUT}")
