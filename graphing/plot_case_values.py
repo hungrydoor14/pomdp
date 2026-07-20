@@ -17,9 +17,18 @@ PDF_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}_values.pdf"
 
 
 def case_label_from_path(path):
-    for part in path.stem.split("-"):
-        if part.startswith("c") and part[1:].isdigit():
-            return f"Case {int(part[1:])}"
+    parts = path.stem.split("-")
+
+    for index, part in enumerate(parts):
+        if not part.startswith("c") or not part[1:].isdigit():
+            continue
+
+        case_number = int(part[1:])
+
+        if index + 1 < len(parts) and parts[index + 1].isdigit():
+            return f"Case {case_number}.{int(parts[index + 1])}"
+
+        return f"Case {case_number}"
 
     return "Case"
 

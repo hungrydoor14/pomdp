@@ -30,12 +30,12 @@ Active input file used by `plot_observed_model_case_study.py`.
 Case 1 data. This is the Theorem 3-style example where the observed transition
 model is fixed and the attack changes the learned observed rewards/values.
 
-`case_study-c2.json`
+`case_study-c2-1.json`
 
-Case 2 data. This is the transition-mislearning example where the attack changes
-the induced observed transition model.
+Case 2.1 data. This is the transition-mislearning example where the attack
+changes the induced observed transition model.
 
-`case_study-c3.json`
+`case_study-c2-2.json`
 
-Case 3 data. This is the fake observed-coverage example where observed
+Case 2.2 data. This is the fake observed-coverage example where observed
 state-action coverage is complete but hidden-state coverage is incomplete.
