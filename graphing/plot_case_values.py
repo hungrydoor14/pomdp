@@ -195,7 +195,7 @@ def main():
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     fig.savefig(PNG_OUTPUT, dpi=300, bbox_inches="tight", pad_inches=0.12, facecolor="white")
-    fig.savefig(PDF_OUTPUT, bbox_inches="tight", pad_inches=0.12, facecolor="white")
+    #fig.savefig(PDF_OUTPUT, bbox_inches="tight", pad_inches=0.12, facecolor="white")
     plt.close(fig)
 
     print(f"Input: {INPUT_FILE}")
