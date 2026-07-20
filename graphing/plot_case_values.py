@@ -7,13 +7,26 @@ os.environ.setdefault("MPLCONFIGDIR", "/private/tmp/matplotlib")
 import matplotlib.pyplot as plt
 
 from common import SEQUENCES, derive_model_results, read_case_file
-from style import BLUE, GRAY, LIGHT_GRAY, PANEL_EDGE, PANEL_FILL, RED
+from style import (
+    AXIS_LABEL_SIZE,
+    BLUE,
+    GRAY,
+    LEGEND_SIZE,
+    LIGHT_GRAY,
+    PANEL_EDGE,
+    PANEL_FILL,
+    PANEL_TITLE_SIZE,
+    RED,
+    TICK_SIZE,
+    TITLE_SIZE,
+    VALUE_LABEL_SIZE,
+)
 
 
-INPUT_FILE = Path("graphing/case_study-c1.json")
+INPUT_FILE = Path("graphing/case_study-c2-2.json")
 OUTPUT_DIR = Path("outputs/t3")
-PNG_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}_values.png"
-PDF_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}_values.pdf"
+PNG_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}_values.png"
+PDF_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}_values.pdf"
 
 
 def case_label_from_path(path):
@@ -39,43 +52,55 @@ def sequence_label(sequence):
     return rf"$(a_{first},a_{second})$"
 
 
-def sequence_values(data, prefix, s1):
-    return [data[f"{prefix}_values_s1_{s1}"][sequence] for sequence in SEQUENCES]
+def value_for(data, prefix, s1, sequence):
+    return data[f"{prefix}_values_s1_{s1}"][sequence]
 
 
-def draw_value_panel(ax, data, results, prefix, s1):
-    values = sequence_values(data, prefix, s1)
-    best_sequence = results[s1]["sequence"]
+def draw_sequence_panel(ax, data, original_results, attacked_results, sequence):
+    values = {
+        ("original", 0): value_for(data, "original", 0, sequence),
+        ("attacked", 0): value_for(data, "attacked", 0, sequence),
+        ("original", 1): value_for(data, "original", 1, sequence),
+        ("attacked", 1): value_for(data, "attacked", 1, sequence),
+    }
 
-    colors = [
-        BLUE if sequence == best_sequence else "#DDE3EE"
-        for sequence in SEQUENCES
+    x_positions = [-0.13, 0.13, 0.87, 1.13]
+    bar_values = [
+        values[("original", 0)],
+        values[("attacked", 0)],
+        values[("original", 1)],
+        values[("attacked", 1)],
     ]
-
-    if prefix == "attacked":
-        colors = [
-            RED if sequence == best_sequence else "#E7EAF0"
-            for sequence in SEQUENCES
-        ]
-
-    winner_edge = "#0F3B82" if prefix == "original" else "#8F1D1D"
+    is_optimal = [
+        original_results[0]["sequence"] == sequence,
+        attacked_results[0]["sequence"] == sequence,
+        original_results[1]["sequence"] == sequence,
+        attacked_results[1]["sequence"] == sequence,
+    ]
+    fills = [
+        BLUE if is_optimal[0] else "#DDE3EE",
+        RED if is_optimal[1] else "#F0D8D8",
+        BLUE if is_optimal[2] else "#DDE3EE",
+        RED if is_optimal[3] else "#F0D8D8",
+    ]
+    edges = [
+        "#0F3B82" if is_optimal[0] else PANEL_EDGE,
+        "#8F1D1D" if is_optimal[1] else PANEL_EDGE,
+        "#0F3B82" if is_optimal[2] else PANEL_EDGE,
+        "#8F1D1D" if is_optimal[3] else PANEL_EDGE,
+    ]
+    widths = [1.5 if optimal else 0.8 for optimal in is_optimal]
 
     bars = ax.bar(
-        range(len(SEQUENCES)),
-        values,
-        color=colors,
-        edgecolor=[
-            winner_edge if sequence == best_sequence else PANEL_EDGE
-            for sequence in SEQUENCES
-        ],
-        linewidth=[
-            1.4 if sequence == best_sequence else 0.8
-            for sequence in SEQUENCES
-        ],
-        width=0.68,
+        x_positions,
+        bar_values,
+        color=fills,
+        edgecolor=edges,
+        linewidth=widths,
+        width=0.22,
     )
 
-    for bar, value in zip(bars, values):
+    for bar, value in zip(bars, bar_values):
         y = value + 0.06 if value >= 0 else value - 0.10
         va = "bottom" if value >= 0 else "top"
         ax.text(
@@ -84,22 +109,24 @@ def draw_value_panel(ax, data, results, prefix, s1):
             f"{value:.3f}",
             ha="center",
             va=va,
-            fontsize=8.5,
+            fontsize=VALUE_LABEL_SIZE,
             color=GRAY,
         )
 
     ax.axhline(0, color=LIGHT_GRAY, linewidth=1.0)
-    ax.set_xticks(range(len(SEQUENCES)))
-    ax.set_xticklabels([sequence_label(sequence) for sequence in SEQUENCES], fontsize=9)
-    ax.tick_params(axis="y", labelsize=8.5, colors=GRAY)
+    ax.set_xlim(-0.45, 1.45)
+    ax.set_xticks([0, 1])
+    ax.set_xticklabels([r"$S_1=0$", r"$S_1=1$"], fontsize=TICK_SIZE)
+    ax.tick_params(axis="y", labelsize=TICK_SIZE, colors=GRAY)
     ax.grid(axis="y", color="#EEF1F5", linewidth=0.8)
     ax.set_axisbelow(True)
+    ax.set_facecolor(PANEL_FILL)
+    ax.set_box_aspect(1)
+    ax.set_title(sequence_label(sequence), fontsize=PANEL_TITLE_SIZE, fontweight="bold", color=GRAY)
 
     for spine in ax.spines.values():
         spine.set_color(PANEL_EDGE)
         spine.set_linewidth(0.9)
-
-    ax.set_facecolor(PANEL_FILL)
 
 
 def main():
@@ -111,48 +138,60 @@ def main():
         value
         for prefix in ("original", "attacked")
         for s1 in (0, 1)
-        for value in sequence_values(data, prefix, s1)
+        for value in data[f"{prefix}_values_s1_{s1}"].values()
     ]
-    y_min = min(all_values) - 0.35
-    y_max = max(all_values) + 0.35
+    y_min = min(all_values) - 0.65
+    y_max = max(all_values) + 0.65
 
-    fig, axes = plt.subplots(2, 2, figsize=(11.0, 6.8), sharey=True)
+    fig, axes = plt.subplots(2, 2, figsize=(8.4, 8.4), sharey=True)
 
-    for row, s1 in enumerate((0, 1)):
-        draw_value_panel(axes[row, 0], data, original_results, "original", s1)
-        draw_value_panel(axes[row, 1], data, attacked_results, "attacked", s1)
+    sequence_positions = {
+        ("a0", "a1"): (0, 0),
+        ("a1", "a1"): (0, 1),
+        ("a0", "a0"): (1, 0),
+        ("a1", "a0"): (1, 1),
+    }
 
-        axes[row, 0].set_ylabel(rf"$S_1={s1}$", fontsize=12, fontweight="bold", color=GRAY)
+    for sequence, (row, col) in sequence_positions.items():
+        ax = axes[row, col]
+        draw_sequence_panel(ax, data, original_results, attacked_results, sequence)
+        ax.set_ylim(y_min, y_max)
 
-        for col in (0, 1):
-            axes[row, col].set_ylim(y_min, y_max)
+    axes[0, 0].set_ylabel("Period 2: " + r"$a_1$", fontsize=AXIS_LABEL_SIZE, color=GRAY)
+    axes[1, 0].set_ylabel("Period 2: " + r"$a_0$", fontsize=AXIS_LABEL_SIZE, color=GRAY)
+    axes[1, 0].set_xlabel("Period 1: " + r"$a_0$", fontsize=AXIS_LABEL_SIZE, color=GRAY)
+    axes[1, 1].set_xlabel("Period 1: " + r"$a_1$", fontsize=AXIS_LABEL_SIZE, color=GRAY)
 
-    axes[0, 0].set_title("Original observed model", fontsize=13, fontweight="bold", color=BLUE)
-    axes[0, 1].set_title("Attacker-induced observed model", fontsize=13, fontweight="bold", color=RED)
+    handles = [
+        plt.Rectangle((0, 0), 1, 1, facecolor=BLUE, edgecolor="#0F3B82"),
+        plt.Rectangle((0, 0), 1, 1, facecolor=RED, edgecolor="#8F1D1D"),
+    ]
+    fig.legend(
+        handles,
+        ["Original value", "Attacker-induced value"],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 0.925),
+        ncol=2,
+        frameon=False,
+        fontsize=LEGEND_SIZE,
+    )
 
-    meta = data["meta"]
     fig.suptitle(
-        (
-            rf"{case_label_from_path(INPUT_FILE)} value comparison "
-            rf"(seed {meta['seed']}, target "
-            rf"{sequence_label(meta['target'])})"
-        ),
-        fontsize=15,
+        rf"{case_label_from_path(INPUT_FILE)} value comparison",
+        fontsize=TITLE_SIZE,
         fontweight="bold",
         color=BLUE,
-        y=0.98,
+        y=0.975,
     )
 
-    fig.text(
-        0.5,
-        0.035,
-        "Highlighted bars are the learned optimal open-loop sequence for each observed initial state.",
-        ha="center",
-        fontsize=10,
-        color=GRAY,
+    fig.subplots_adjust(
+        left=0.12,
+        right=0.985,
+        bottom=0.075,
+        top=0.805,
+        wspace=0.18,
+        hspace=0.38,
     )
-
-    fig.tight_layout(rect=[0.045, 0.07, 0.995, 0.93])
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     fig.savefig(PNG_OUTPUT, dpi=300, bbox_inches="tight", pad_inches=0.12, facecolor="white")

@@ -24,18 +24,25 @@ from style import (
     ACTION_DIAMOND_HALF_HEIGHT,
     ACTION_DIAMOND_HALF_WIDTH,
     ARROW_LINEWIDTH,
+    AXIS_LABEL_SIZE,
     BLUE,
     GRAY,
+    LEGEND_SIZE,
     LIGHT_GRAY,
     NEGATIVE_BASE,
     NODE_RADIUS,
+    NOTE_SIZE,
     PANEL_EDGE,
     PANEL_FILL,
+    PANEL_TITLE_SIZE,
     POSITIVE_BASE,
     RED,
+    TICK_SIZE,
+    TITLE_SIZE,
     TRANSITION_CMAP,
     TRANSITION_COLOR_MAX,
     TRANSITION_COLOR_MIN,
+    VALUE_LABEL_SIZE,
 )
 
 
@@ -43,10 +50,10 @@ from style import (
 # Paths
 # ============================================================
 
-INPUT_FILE = Path("graphing/case_study.json")
+INPUT_FILE = Path("graphing/case_study-c1.json")
 OUTPUT_DIR = Path("outputs/t3")
-PNG_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}.png"
-PDF_OUTPUT = OUTPUT_DIR / f"{INPUT_FILE.stem}.pdf"
+PNG_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}.png"
+PDF_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}.pdf"
 
 
 # ============================================================
@@ -197,7 +204,7 @@ def draw_state_node(ax, x, y, state, rewards, selected_action, maximum_absolute_
         state,
         ha="center",
         va="center",
-        fontsize=14,
+        fontsize=PANEL_TITLE_SIZE,
         fontweight="bold",
         color="black",
         zorder=9,
@@ -209,7 +216,7 @@ def draw_state_node(ax, x, y, state, rewards, selected_action, maximum_absolute_
         r"$a_0$",
         ha="center",
         va="center",
-        fontsize=8.5,
+        fontsize=VALUE_LABEL_SIZE,
         color="black",
         zorder=9,
     )
@@ -220,7 +227,7 @@ def draw_state_node(ax, x, y, state, rewards, selected_action, maximum_absolute_
         r"$a_1$",
         ha="center",
         va="center",
-        fontsize=8.5,
+        fontsize=VALUE_LABEL_SIZE,
         color="black",
         zorder=9,
     )
@@ -237,7 +244,7 @@ def draw_state_node(ax, x, y, state, rewards, selected_action, maximum_absolute_
         r"$\star$",
         ha="center",
         va="center",
-        fontsize=13,
+        fontsize=PANEL_TITLE_SIZE,
         fontweight="bold",
         color=RED,
         zorder=10,
@@ -318,7 +325,7 @@ def draw_action_diamond(ax, x, y, action):
         rf"$a_{action_index}$",
         ha="center",
         va="center",
-        fontsize=9.5,
+        fontsize=VALUE_LABEL_SIZE,
         fontweight="bold",
         color=RED,
         zorder=8,
@@ -465,7 +472,7 @@ def draw_sequence_value_box(ax, center_x, bottom_y, results):
         line_1 + "\n" + line_2,
         ha="center",
         va="center",
-        fontsize=9.5,
+        fontsize=VALUE_LABEL_SIZE,
         color="black",
         bbox={
             "boxstyle": "round,pad=0.48",
@@ -505,7 +512,7 @@ def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maxim
         title,
         ha="center",
         va="center",
-        fontsize=17,
+        fontsize=TITLE_SIZE,
         fontweight="bold",
         color=BLUE,
     )
@@ -516,7 +523,7 @@ def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maxim
         "Period 1",
         ha="center",
         va="center",
-        fontsize=12.5,
+        fontsize=AXIS_LABEL_SIZE,
         fontweight="bold",
         color=GRAY,
     )
@@ -527,7 +534,7 @@ def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maxim
         "Period 2",
         ha="center",
         va="center",
-        fontsize=12.5,
+        fontsize=AXIS_LABEL_SIZE,
         fontweight="bold",
         color=GRAY,
     )
@@ -617,7 +624,7 @@ def draw_reward_legend_entry(ax, center_x, y):
         "negative",
         ha="right",
         va="center",
-        fontsize=7.5,
+        fontsize=NOTE_SIZE,
         color=GRAY,
     )
 
@@ -627,7 +634,7 @@ def draw_reward_legend_entry(ax, center_x, y):
         "positive",
         ha="left",
         va="center",
-        fontsize=7.5,
+        fontsize=NOTE_SIZE,
         color=GRAY,
     )
 
@@ -637,7 +644,7 @@ def draw_reward_legend_entry(ax, center_x, y):
         "Reward sign and magnitude",
         ha="center",
         va="center",
-        fontsize=8.5,
+        fontsize=LEGEND_SIZE,
         fontweight="bold",
         color=GRAY,
     )
@@ -650,7 +657,7 @@ def draw_transition_legend_entry(ax, center_x, y):
         "Observed transition probability",
         ha="center",
         va="center",
-        fontsize=8.5,
+        fontsize=LEGEND_SIZE,
         fontweight="bold",
         color=GRAY,
     )
@@ -682,7 +689,7 @@ def draw_transition_legend_entry(ax, center_x, y):
             zorder=5,
         )
         ax.add_patch(arrow)
-        ax.text(x, y - 0.13, label, ha="center", va="center", fontsize=7.2, color=GRAY)
+        ax.text(x, y - 0.13, label, ha="center", va="center", fontsize=NOTE_SIZE, color=GRAY)
 
     ax.text(
         center_x,
@@ -690,15 +697,15 @@ def draw_transition_legend_entry(ax, center_x, y):
         r"$P(S_1'\mid S_1,a)$",
         ha="center",
         va="center",
-        fontsize=8.0,
+        fontsize=NOTE_SIZE,
         color=GRAY,
     )
 
 
 def draw_visual_legend(ax, center_x, y):
-    draw_reward_legend_entry(ax=ax, center_x=center_x - 1.85, y=y)
+    draw_reward_legend_entry(ax=ax, center_x=center_x - 2.55, y=y)
 
-    draw_transition_legend_entry(ax=ax, center_x=center_x + 1.85, y=y)
+    draw_transition_legend_entry(ax=ax, center_x=center_x + 2.55, y=y)
 
 
 # ============================================================
@@ -746,11 +753,11 @@ def main():
         ),
     )
 
-    draw_visual_legend(ax=ax, center_x=7.35, y=-3.26)
+    draw_visual_legend(ax=ax, center_x=7.35, y=-3.45)
 
     ax.text(
         7.35,
-        -3.78,
+        -4.15,
         (
             r"Each complete Period-1 state has its own "
             r"selected-action arrow. "
@@ -759,7 +766,7 @@ def main():
         ),
         ha="center",
         va="center",
-        fontsize=9.2,
+        fontsize=NOTE_SIZE,
         color="black",
     )
 
@@ -777,13 +784,13 @@ def main():
         ),
         ha="center",
         va="center",
-        fontsize=10,
+        fontsize=NOTE_SIZE,
         color=GRAY,
     )
 
     ax.set_xlim(-0.35, 15.05)
 
-    ax.set_ylim(-4.05, 4.40)
+    ax.set_ylim(-4.55, 4.40)
 
     ax.set_aspect("equal")
     ax.axis("off")
