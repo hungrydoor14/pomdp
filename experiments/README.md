@@ -28,6 +28,14 @@ changes under attacker-induced hidden-state mixtures.
 Constructs a coverage diagnostic where the observed state \(S_1\) appears fully
 covered, but some hidden states \((S_1,S_2)\) have zero samples.
 
+`find_t3_failure_unteachable_case.py`
+
+Searches for a Case 4 example where Theorem 3's range condition fails and the
+stationary two-period target is not strictly teachable—the simple converse of
+Case 1. It prints the same observed-model case-study sections as Case 1. The
+attacker search is exhaustive over policy rows `(1,0)`, `(0,1)`, and
+`(0.5,0.5)`.
+
 `plot_inducible_observed_model_diagnostics.py`
 
 Produces the older diagnostic plots for the inducible observed-model case.

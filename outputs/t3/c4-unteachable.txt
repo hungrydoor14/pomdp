@@ -1,0 +1,98 @@
+# meta
+seed 0
+control 0.55
+obs_info 0.55
+target a1 a1
+margin -0.013001
+theorem_3_passes 0
+target_teachable 0
+policies_checked 81
+
+# theorem_3
+# s1  range_margin  passes
+0 -0.021000 0
+1 1.483000 1
+
+# rewards
+# state  R(state,a0)  R(state,a1)
+00  0.126000 -0.132000
+01  0.640000  0.105000
+10 -0.536000  0.362000
+11  1.304000  0.947000
+
+# original_values_s1_0
+# sequence  value
+a0 a0  0.768254
+a0 a1  0.613781
+a1 a0  0.431636
+a1 a1  0.280589
+
+# original_values_s1_1
+a0 a0  1.240054
+a0 a1  1.085581
+a1 a0  1.264036
+a1 a1  1.112989
+
+# attacked_values_s1_0
+# sequence  value
+a0 a0 -0.065606
+a0 a1  0.621700
+a1 a0 -0.092894
+a1 a1  0.608699
+
+# attacked_values_s1_1
+a0 a0 -0.727606
+a0 a1 -0.040300
+a1 a0  0.749105
+a1 a1  1.450699
+
+# original_b
+# s1  action  P(S2=1 | S1=s1,A=action)
+0 a0 0.300000
+0 a1 0.300000
+1 a0 0.700000
+1 a1 0.700000
+
+# attacked_b
+0 a0 0.000000
+0 a1 1.000000
+1 a0 0.000000
+1 a1 1.000000
+
+# original_transitions
+# action  P(next_S1=0)  P(next_S1=1)
+a0 0.505000 0.495000
+a1 0.495000 0.505000
+
+# attacked_transitions
+# action  P(next_S1=0)  P(next_S1=1)
+a0 0.505000 0.495000
+a1 0.495000 0.505000
+
+# original_transitions_by_s1
+# s1  action  P(next_S1=0)  P(next_S1=1)
+0 a0 0.505000 0.495000
+0 a1 0.495000 0.505000
+1 a0 0.505000 0.495000
+1 a1 0.495000 0.505000
+
+# attacked_transitions_by_s1
+# s1  action  P(next_S1=0)  P(next_S1=1)
+0 a0 0.505000 0.495000
+0 a1 0.495000 0.505000
+1 a0 0.505000 0.495000
+1 a1 0.495000 0.505000
+
+# attacker_policy
+# state  pi_dagger(a1 | S1,S2)
+00 0.0
+01 1.0
+10 0.0
+11 1.0
+
+# coverage
+# quantity  covered
+observed_state 1
+observed_state_action 1
+hidden_state 1
+full_state_action 0

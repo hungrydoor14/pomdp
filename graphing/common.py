@@ -51,6 +51,8 @@ def read_text_case_file(path):
         "original_transitions_by_s1",
         "attacked_transitions_by_s1",
         "attacker_policy",
+        "period1_state_counts",
+        "period2_state_counts",
         "hidden_state_counts",
         "observed_state_counts",
         "observed_state_action_counts",
@@ -115,7 +117,11 @@ def read_text_case_file(path):
             elif current_section == "attacker_policy":
                 parse_attacker_policy_row(data[current_section], parts, line_number)
 
-            elif current_section == "hidden_state_counts":
+            elif current_section in {
+                "hidden_state_counts",
+                "period1_state_counts",
+                "period2_state_counts",
+            }:
                 parse_hidden_state_count_row(data[current_section], parts, line_number)
 
             elif current_section == "observed_state_counts":
@@ -234,6 +240,8 @@ def case_to_json(data):
 
     optional_direct_sections = (
         "attacker_policy",
+        "period1_state_counts",
+        "period2_state_counts",
         "hidden_state_counts",
         "observed_state_counts",
         "coverage",
@@ -335,12 +343,16 @@ def normalize_json_case(raw_data):
             in raw_data["attacker_policy"].items()
         }
 
-    if "hidden_state_counts" in raw_data:
-        data["hidden_state_counts"] = {
-            state: int(count)
-            for state, count
-            in raw_data["hidden_state_counts"].items()
-        }
+    for section in (
+        "hidden_state_counts",
+        "period1_state_counts",
+        "period2_state_counts",
+    ):
+        if section in raw_data:
+            data[section] = {
+                state: int(count)
+                for state, count in raw_data[section].items()
+            }
 
     if "observed_state_counts" in raw_data:
         data["observed_state_counts"] = {

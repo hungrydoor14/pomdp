@@ -1,121 +1,135 @@
 # meta
-seed 1
-control 0.80
-obs_info 0.85
+seed 5
+control 1.00
+obs_info 0.70
 target a1 a1
-margin 0.210
+margin 0.629236
 
 # rewards
 # state  R(state,a0)  R(state,a1)
-00  0.346  0.822
-01  0.330 -1.303
-10  0.905  0.446
-11 -0.537  0.581
+00 -0.801931 -1.324359
+01 -0.248362  0.420445
+10  1.136047  0.109706
+11 -0.552647 -0.784780
 
 # original_values_s1_0
 # sequence  value
-a0 a0  0.555
-a0 a1  0.604
-a1 a0  0.314
-a1 a1  0.515
+a0 a0 -1.239928
+a0 a1 -1.396732
+a1 a0 -1.236886
+a1 a1 -1.480712
 
 # original_values_s1_1
-a0 a0 -0.009
-a0 a1  0.254
-a1 a0  0.552
-a1 a1  0.966
+a0 a0 -0.089776
+a0 a1 -0.536652
+a1 a0 -0.728271
+a1 a1 -1.088125
 
 # attacked_values_s1_0
 # sequence  value
-a0 a0  0.632
-a0 a1  1.115
-a1 a0  0.940
-a1 a1  1.545
+a0 a0 -1.563766
+a0 a1 -0.402508
+a1 a0 -0.104570
+a1 a1  0.524666
 
 # attacked_values_s1_1
-a0 a0 -0.837
-a0 a1  0.072
-a1 a0  0.113
-a1 a1  1.145
+a0 a0 -1.077662
+a0 a1 -0.448426
+a1 a0 -0.652128
+a1 a1  0.509129
 
 # original_b
 # s1  action  P(S2=1 | S1=s1,A=action)
-0 a0 0.300
-0 a1 0.300
-1 a0 0.700
-1 a1 0.700
+0 a0 0.300000
+0 a1 0.300000
+1 a0 0.700000
+1 a1 0.700000
 
 # attacked_b
-0 a0 0.000
-0 a1 0.000
-1 a0 1.000
-1 a1 1.000
+0 a0 0.000000
+0 a1 1.000000
+1 a0 1.000000
+1 a1 0.000000
 
 # original_transitions
 # action  P(next_S1=0)  P(next_S1=1)
-a0 0.740 0.260
-a1 0.540 0.460
+a0 1.000000 0.000000
+a1 0.700000 0.300000
 
 # attacked_transitions
 # action  P(next_S1=0)  P(next_S1=1)
-a0 0.950 0.050
-a1 0.750 0.250
+a0 1.000000 0.000000
+a1 0.000000 1.000000
 
 # original_transitions_by_s1
 # s1  action  P(next_S1=0)  P(next_S1=1)
-0 a0 0.740 0.260
-0 a1 0.540 0.460
-1 a0 0.460 0.540
-1 a1 0.260 0.740
+0 a0 1.000000 0.000000
+0 a1 0.700000 0.300000
+1 a0 0.000000 1.000000
+1 a1 0.300000 0.700000
 
 # attacked_transitions_by_s1
 # s1  action  P(next_S1=0)  P(next_S1=1)
-0 a0 0.950 0.050
-0 a1 0.750 0.250
-1 a0 0.250 0.750
-1 a1 0.050 0.950
-
+0 a0 1.000000 0.000000
+0 a1 0.000000 1.000000
+1 a0 0.000000 1.000000
+1 a1 1.000000 0.000000
 
 # attacker_policy
 # state  pi_dagger(a1 | S1,S2)
-00 0.469345
-01 nan
-10 nan
-11 0.462998
+00 0.0
+01 1.0
+10 1.0
+11 0.0
+
+# period1_state_counts
+# state  count
+00 350
+01 150
+10 150
+11 350
+
+# period2_state_counts
+# state  count
+00 500
+01 0
+10 0
+11 500
 
 # hidden_state_counts
 # state  count
-00 473
+00 500
 01 0
 10 0
-11 527
+11 500
 
 # observed_state_counts
 # s1  count
-0 473
-1 527
+0 500
+1 500
 
 # observed_state_action_counts
 # s1  action  count
-0 a0 251
-0 a1 222
-1 a0 283
-1 a1 244
+0 a0 350
+0 a1 150
+1 a0 350
+1 a1 150
 
 # full_state_action_counts
 # state  action  count
-00 a0 251
-00 a1 222
+00 a0 350
+00 a1 0
 01 a0 0
-01 a1 0
+01 a1 150
 10 a0 0
-10 a1 0
-11 a0 283
-11 a1 244
+10 a1 150
+11 a0 350
+11 a1 0
 
 # coverage
 # quantity  covered
 observed_state 1
 observed_state_action 1
-hidden_state 0
+period1_hidden_state 1
+period2_hidden_state 0
 full_state_action 0

@@ -50,7 +50,7 @@ from style import (
 # Paths
 # ============================================================
 
-INPUT_FILE = Path("graphing/case_study-c1.json")
+INPUT_FILE = Path("graphing/case_study-c4.json")
 OUTPUT_DIR = Path("outputs/t3")
 PNG_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}.png"
 PDF_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}.pdf"
@@ -270,19 +270,31 @@ def draw_state_node(ax, x, y, state, rewards, selected_action, maximum_absolute_
     ax.add_patch(selected_arc)
 
 
-def draw_vertical_state_column(ax, x, rewards, selected_actions, maximum_absolute_reward):
+def draw_vertical_state_column(
+    ax,
+    x,
+    rewards,
+    selected_actions,
+    maximum_absolute_reward,
+    visible_states,
+):
+    visible_state_order = [state for state in STATE_ORDER if state in visible_states]
+
+    if not visible_state_order:
+        return
+
     ax.plot(
         [x, x],
         [
-            STATE_Y[STATE_ORDER[-1]],
-            STATE_Y[STATE_ORDER[0]],
+            STATE_Y[visible_state_order[-1]],
+            STATE_Y[visible_state_order[0]],
         ],
         color=LIGHT_GRAY,
         linewidth=2.0,
         zorder=1,
     )
 
-    for state in STATE_ORDER:
+    for state in visible_state_order:
         observed_s1 = int(state[0])
 
         draw_state_node(
@@ -364,7 +376,10 @@ def draw_probability_arrow(ax, start, end, probability):
         arrowstyle="-|>",
         mutation_scale=11,
         linewidth=ARROW_LINEWIDTH,
-        color=transition_color(probability),
+        color=transition_color(
+            probability,
+            clip_to_observed_range=False,
+        ),
         alpha=1.0,
         zorder=3,
     )
@@ -372,7 +387,7 @@ def draw_probability_arrow(ax, start, end, probability):
     ax.add_patch(arrow)
 
 
-def target_state_for_transition(source_state, next_s1):
+def target_state_for_transition(source_state, next_s1, period2_visible_states):
     """
     The printed transition data determines the next observed state S1',
     but not a full next hidden state.
@@ -384,12 +399,39 @@ def target_state_for_transition(source_state, next_s1):
         source 01 and next_s1=1 -> target 11
         source 10 and next_s1=0 -> target 00
     """
+    candidates = [
+        state
+        for state in period2_visible_states
+        if int(state[0]) == next_s1
+    ]
+
+    if len(candidates) == 1:
+        return candidates[0]
+
     source_s2 = source_state[1]
 
     return f"{next_s1}{source_s2}"
 
 
-def draw_four_state_transition_structure(ax, period1_x, period2_x, results, transitions):
+def transition_for_source(transitions, observed_s1, action):
+    """Read a state-dependent transition, falling back to the legacy format."""
+    state_action_key = (observed_s1, action)
+
+    if state_action_key in transitions:
+        return transitions[state_action_key]
+
+    return transitions[action]
+
+
+def draw_four_state_transition_structure(
+    ax,
+    period1_x,
+    period2_x,
+    results,
+    transitions,
+    period1_visible_states,
+    period2_visible_states,
+):
     """
     Give each complete Period-1 state its own selected-action arrow,
     action diamond, and two straight transition arrows.
@@ -401,6 +443,9 @@ def draw_four_state_transition_structure(ax, period1_x, period2_x, results, tran
     diamond_x = (period1_x + 0.42 * (period2_x - period1_x))
 
     for source_state in STATE_ORDER:
+        if source_state not in period1_visible_states:
+            continue
+
         observed_s1 = int(source_state[0])
 
         selected_sequence = results[observed_s1]["sequence"]
@@ -409,10 +454,26 @@ def draw_four_state_transition_structure(ax, period1_x, period2_x, results, tran
         source_y = STATE_Y[source_state]
         diamond_y = source_y
 
-        for next_s1 in (0, 1):
-            probability = transitions[first_action][next_s1]
+        source_transition = transition_for_source(
+            transitions,
+            observed_s1,
+            first_action,
+        )
 
-            target_state = target_state_for_transition(source_state, next_s1)
+        for next_s1 in (0, 1):
+            probability = source_transition[next_s1]
+
+            if probability <= 1e-12:
+                continue
+
+            target_state = target_state_for_transition(
+                source_state,
+                next_s1,
+                period2_visible_states,
+            )
+
+            if target_state not in period2_visible_states:
+                continue
 
             target_y = STATE_Y[target_state]
 
@@ -427,6 +488,9 @@ def draw_four_state_transition_structure(ax, period1_x, period2_x, results, tran
     # --------------------------------------------------------
 
     for source_state in STATE_ORDER:
+        if source_state not in period1_visible_states:
+            continue
+
         observed_s1 = int(source_state[0])
 
         selected_sequence = results[observed_s1]["sequence"]
@@ -488,7 +552,17 @@ def draw_sequence_value_box(ax, center_x, bottom_y, results):
 # Model panel
 # ============================================================
 
-def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maximum_absolute_reward):
+def draw_model_panel(
+    ax,
+    panel_left,
+    title,
+    rewards,
+    results,
+    transitions,
+    maximum_absolute_reward,
+    period1_visible_states,
+    period2_visible_states,
+):
     panel_width = 7.10
     panel_bottom = -2.65
     panel_height = 5.75
@@ -558,6 +632,8 @@ def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maxim
         period2_x=period2_x,
         results=results,
         transitions=transitions,
+        period1_visible_states=period1_visible_states,
+        period2_visible_states=period2_visible_states,
     )
 
     draw_vertical_state_column(
@@ -568,6 +644,7 @@ def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maxim
         maximum_absolute_reward=(
             maximum_absolute_reward
         ),
+        visible_states=period1_visible_states,
     )
 
     draw_vertical_state_column(
@@ -578,6 +655,7 @@ def draw_model_panel(ax, panel_left, title, rewards, results, transitions, maxim
         maximum_absolute_reward=(
             maximum_absolute_reward
         ),
+        visible_states=period2_visible_states,
     )
 
     draw_sequence_value_box(ax=ax, center_x=panel_center, bottom_y=-2.31, results=results)
@@ -715,6 +793,16 @@ def draw_visual_legend(ax, center_x, y):
 def main():
     data = read_case_file(INPUT_FILE)
 
+    all_states = set(STATE_ORDER)
+    attacked_period2_visible_states = {
+        state
+        for state in STATE_ORDER
+        if data.get(
+            "period2_state_counts",
+            data.get("hidden_state_counts", {}),
+        ).get(state, 1) > 0
+    }
+
     original_results = derive_model_results(data, "original")
 
     attacked_results = derive_model_results(data, "attacked")
@@ -735,10 +823,15 @@ def main():
         title="Original observed model",
         rewards=data["rewards"],
         results=original_results,
-        transitions=data["original_transitions"],
+        transitions=data.get(
+            "original_transitions_by_s1",
+            data["original_transitions"],
+        ),
         maximum_absolute_reward=(
             maximum_absolute_reward
         ),
+        period1_visible_states=all_states,
+        period2_visible_states=all_states,
     )
 
     draw_model_panel(
@@ -747,10 +840,15 @@ def main():
         title="Attacker-induced observed model",
         rewards=data["rewards"],
         results=attacked_results,
-        transitions=data["attacked_transitions"],
+        transitions=data.get(
+            "attacked_transitions_by_s1",
+            data["attacked_transitions"],
+        ),
         maximum_absolute_reward=(
             maximum_absolute_reward
         ),
+        period1_visible_states=all_states,
+        period2_visible_states=attacked_period2_visible_states,
     )
 
     draw_visual_legend(ax=ax, center_x=7.35, y=-3.45)
