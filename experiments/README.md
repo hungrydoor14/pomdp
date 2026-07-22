@@ -1,5 +1,17 @@
 # Experiment scripts
 
+## Result naming
+
+- `T1-DSE`: Lemma 1
+- `T1-IFF`: Theorem 1
+- `T2-DSE`: Theorems 2 and 3
+- `T2-PD`: planned Theorem 4
+- `T2-IFF`: planned main theorem (Theorem 5)
+
+Python modules spell these labels with underscores (for example,
+`find_t2_dse_failure_unteachable_case.py`); human-readable labels and generated
+artifact names use hyphens (for example, `T2-DSE` and `t2-dse_case_study-c1.png`).
+
 `two_period_joint_policy_experiments.py`
 
 Shared two-period factored-POMDP helpers and joint-policy calculations used by
@@ -14,11 +26,11 @@ Searches for cases where one fixed open-loop sequence is preferred.
 Searches for local-neighbor and root-deviation patterns in two-period policy
 trees.
 
-`find_inducible_observed_model_case.py`
+`find_t2_dse_inducible_observed_model_case.py`
 
-Finds the Case 1-style inducible observed-model example used for Theorem 3.
+Finds the Case 1-style inducible observed-model example used for T2-DSE.
 
-`find_transition_mislearning_case.py`
+`find_t2_dse_transition_mislearning_case.py`
 
 Finds the Case 2-style example where the learned observed transition model
 changes under attacker-induced hidden-state mixtures.
@@ -28,9 +40,9 @@ changes under attacker-induced hidden-state mixtures.
 Constructs a coverage diagnostic where the observed state \(S_1\) appears fully
 covered, but some hidden states \((S_1,S_2)\) have zero samples.
 
-`find_t3_failure_unteachable_case.py`
+`find_t2_dse_failure_unteachable_case.py`
 
-Searches for a Case 4 example where Theorem 3's range condition fails and the
+Searches for a Case 4 example where T2-DSE's range condition fails and the
 stationary two-period target is not strictly teachable—the simple converse of
 Case 1. It prints the same observed-model case-study sections as Case 1. The
 attacker search is exhaustive over policy rows `(1,0)`, `(0,1)`, and

@@ -5,13 +5,13 @@
     "obs_info": 0.55,
     "target": ["a1", "a1"],
     "margin": -0.013001,
-    "theorem_3_passes": 0.0,
-    "theorem_margin_s1_0": -0.021,
-    "theorem_margin_s1_1": 1.483,
+    "t2_dse_passes": 0.0,
+    "t2_dse_margin_s1_0": -0.021,
+    "t2_dse_margin_s1_1": 1.483,
     "target_teachable": 0.0,
     "policies_checked": 81.0
   },
-  "theorem_3": {
+  "t2_dse": {
     "0": {"range_margin": -0.021, "passes": false},
     "1": {"range_margin": 1.483, "passes": true}
   },

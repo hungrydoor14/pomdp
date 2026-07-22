@@ -4,7 +4,7 @@ from itertools import product
 
 import numpy as np
 
-from find_transition_mislearning_case import (
+from find_t2_dse_transition_mislearning_case import (
     best_sequences,
     induced_observed_transition,
     prior_b_vector,

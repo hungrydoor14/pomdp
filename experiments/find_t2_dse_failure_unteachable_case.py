@@ -10,7 +10,7 @@ import numpy as np
 
 sys.path.append(os.path.dirname(__file__))
 
-from find_inducible_observed_model_case import (
+from find_t2_dse_inducible_observed_model_case import (
     INITIAL_MATCH_PROB,
     b_index,
     observed_transition,
@@ -45,7 +45,7 @@ class Case4:
     obs_info: float
     pomdp: object
     target: tuple[int, int]
-    theorem_margins: tuple[float, float]
+    t2_dse_margins: tuple[float, float]
     best_margin: float
     attacker: np.ndarray
     attacked_b: np.ndarray
@@ -76,7 +76,7 @@ def induced_b(attacker: np.ndarray) -> np.ndarray | None:
     return b
 
 
-def theorem_3_margins(pomdp, target_action: int) -> tuple[float, float]:
+def t2_dse_margins(pomdp, target_action: int) -> tuple[float, float]:
     """
     Case 1's range condition, evaluated at both observed states:
     max_s2 R(s1,s2,target) - min_s2 R(s1,s2,alternative) > 0.
@@ -136,8 +136,8 @@ def find_case(max_seed: int) -> Case4 | None:
             )
             for target_action in range(NUM_ACTIONS):
                 target = (target_action, target_action)
-                theorem_margins = theorem_3_margins(pomdp, target_action)
-                if min(theorem_margins) > TOL:
+                range_margins = t2_dse_margins(pomdp, target_action)
+                if min(range_margins) > TOL:
                     continue
                 best_margin, attacker, attacked_b = strongest_restricted_attack(
                     pomdp, target
@@ -149,7 +149,7 @@ def find_case(max_seed: int) -> Case4 | None:
                         obs_info=obs_info,
                         pomdp=pomdp,
                         target=target,
-                        theorem_margins=theorem_margins,
+                        t2_dse_margins=range_margins,
                         best_margin=best_margin,
                         attacker=attacker,
                         attacked_b=attacked_b,
@@ -205,9 +205,9 @@ def print_case(case: Case4) -> None:
     print(f"obs_info {case.obs_info:.2f}")
     print(f"target a{case.target[0]} a{case.target[1]}")
     print(f"margin {case.best_margin:.6f}")
-    print("theorem_3_passes 0")
-    for s1, margin in enumerate(case.theorem_margins):
-        print(f"theorem_margin_s1_{s1} {margin:.6f}")
+    print("t2_dse_passes 0")
+    for s1, margin in enumerate(case.t2_dse_margins):
+        print(f"t2_dse_margin_s1_{s1} {margin:.6f}")
     print("target_teachable 0")
     print(f"policies_checked {len(ALLOWED_POLICY_ROWS) ** (NUM_S1 * NUM_S2)}")
     print()
@@ -247,7 +247,7 @@ def print_case(case: Case4) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Find the simple two-period converse of Theorem 3 Case 1."
+        description="Find the simple two-period converse of T2-DSE Case 1."
     )
     parser.add_argument("--max-seed", type=int, default=80)
     return parser.parse_args()

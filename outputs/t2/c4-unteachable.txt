@@ -4,11 +4,11 @@ control 0.55
 obs_info 0.55
 target a1 a1
 margin -0.013001
-theorem_3_passes 0
+t2_dse_passes 0
 target_teachable 0
 policies_checked 81
 
-# theorem_3
+# t2_dse
 # s1  range_margin  passes
 0 -0.021000 0
 1 1.483000 1

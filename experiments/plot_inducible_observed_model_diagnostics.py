@@ -20,7 +20,7 @@ from two_period_joint_policy_experiments import (
     NUM_S2,
     build_action_dependent_factored_pomdp,
 )
-from find_inducible_observed_model_case import (
+from find_t2_dse_inducible_observed_model_case import (
     b_index,
     construct_attacker_from_b,
     format_sequence,
@@ -104,7 +104,7 @@ def plot_attacked_values(pomdp, actual_b, output_dir):
     )
     fig.tight_layout(rect=(0, 0.02, 1, 0.95))
 
-    path = output_dir / "t3_case_study_attacked_values.png"
+    path = output_dir / "t2-dse_case_study_attacked_values.png"
     fig.savefig(path, dpi=180)
     plt.close(fig)
     return path
@@ -154,7 +154,7 @@ def plot_before_after_values(pomdp, prior_b, actual_b, output_dir):
     fig.suptitle("Attacker-induced model changes estimated open-loop values", y=0.98)
     fig.tight_layout(rect=(0, 0, 1, 0.95))
 
-    path = output_dir / "t3_case_study_before_after_values.png"
+    path = output_dir / "t2-dse_case_study_before_after_values.png"
     fig.savefig(path, dpi=180)
     plt.close(fig)
     return path
@@ -197,7 +197,7 @@ def plot_hidden_mixtures(prior_b, actual_b, output_dir):
     fig.suptitle("The attack works by changing hidden-state mixtures", y=1.02)
     fig.tight_layout()
 
-    path = output_dir / "t3_case_study_hidden_mixtures.png"
+    path = output_dir / "t2-dse_case_study_hidden_mixtures.png"
     fig.savefig(path, dpi=180, bbox_inches="tight")
     plt.close(fig)
     return path
@@ -268,7 +268,7 @@ def plot_transition_graph(pomdp, output_dir):
     fig.suptitle("Static observed transition graph", fontsize=14, y=0.98)
     fig.tight_layout(rect=(0, 0, 1, 0.94))
 
-    path = output_dir / "t3_case_study_transition_graph.png"
+    path = output_dir / "t2-dse_case_study_transition_graph.png"
     fig.savefig(path, dpi=180, bbox_inches="tight")
     plt.close(fig)
     return path
@@ -309,7 +309,7 @@ def plot_full_information_first_actions(pomdp, output_dir):
     cbar.ax.set_yticklabels(["a0", "a1"])
     fig.tight_layout()
 
-    path = output_dir / "t3_case_study_full_information_policy.png"
+    path = output_dir / "t2-dse_case_study_full_information_policy.png"
     fig.savefig(path, dpi=180)
     plt.close(fig)
     return path

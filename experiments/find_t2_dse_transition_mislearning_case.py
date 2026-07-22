@@ -54,7 +54,7 @@ def make_hidden_dependent_transition(
     """
     Return T[a, s1, s2, next_s1, next_s2].
 
-    The key departure from the old T3 case is that the next observed state
+    The key departure from the old T2-DSE case is that the next observed state
     depends on the current hidden state. This lets the attack change the
     learner's induced observed transition by changing P(S2 | S1, A).
     """

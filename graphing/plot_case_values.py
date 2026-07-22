@@ -24,9 +24,9 @@ from style import (
 
 
 INPUT_FILE = Path("graphing/case_study-c4.json")
-OUTPUT_DIR = Path("outputs/t3")
-PNG_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}_values.png"
-PDF_OUTPUT = OUTPUT_DIR / f"t3_{INPUT_FILE.stem}_values.pdf"
+OUTPUT_DIR = Path("outputs/t2")
+PNG_OUTPUT = OUTPUT_DIR / f"t2-dse_{INPUT_FILE.stem}_values.png"
+PDF_OUTPUT = OUTPUT_DIR / f"t2-dse_{INPUT_FILE.stem}_values.pdf"
 
 
 def case_label_from_path(path):

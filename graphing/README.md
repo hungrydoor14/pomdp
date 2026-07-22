@@ -27,7 +27,7 @@ Active input file used by `plot_observed_model_case_study.py`.
 
 `case_study-c1.json`
 
-Case 1 data. This is the Theorem 3-style example where the observed transition
+Case 1 data. This is the T2-DSE example where the observed transition
 model is fixed and the attack changes the learned observed rewards/values.
 
 `case_study-c2-1.json`

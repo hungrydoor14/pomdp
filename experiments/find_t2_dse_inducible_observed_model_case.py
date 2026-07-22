@@ -311,10 +311,10 @@ def observed_tstar_by_initial_state(pomdp, b):
     return winners_by_s1
 
 
-def print_t3_case_study(pomdp, row):
+def print_t2_dse_case_study(pomdp, row):
     target = row["target"]
     result = row["inducible"]
-    print("=== T3 case study: what the learner would learn ===")
+    print("=== T2-DSE case study: what the learner would learn ===")
     print(
         f"Selected instance: seed={row['seed']} "
         f"control={row['action_control']:.2f} obs={row['obs_info']:.2f} "
@@ -474,7 +474,7 @@ def main():
         action_control=case_study["action_control"],
         p_s1_matches_s2=case_study["obs_info"],
     )
-    print_t3_case_study(case_study_pomdp, case_study)
+    print_t2_dse_case_study(case_study_pomdp, case_study)
     print()
 
     examples = [r for r in rows if r["inducible"].feasible]
