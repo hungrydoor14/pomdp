@@ -26,6 +26,14 @@ Searches for cases where one fixed open-loop sequence is preferred.
 Searches for local-neighbor and root-deviation patterns in two-period policy
 trees.
 
+`find_t2_pd_passes_t2_dse_fails_case.py`
+
+Searches for a fixed-target example where the policy-dependent two-period
+condition passes in the learner's induced model while the pointwise T2-DSE
+condition fails. It reports all eight policy-tree values, the optimal
+continuation after each first-period action, both T2-PD margins, and the
+hidden-state witness responsible for the T2-DSE failure.
+
 `find_t2_dse_inducible_observed_model_case.py`
 
 Finds the Case 1-style inducible observed-model example used for T2-DSE.

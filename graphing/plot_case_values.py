@@ -23,10 +23,11 @@ from style import (
 )
 
 
-INPUT_FILE = Path("graphing/case_study-c4.json")
+INPUT_FILE = Path("graphing/case_study-c3.json")
 OUTPUT_DIR = Path("outputs/t2")
-PNG_OUTPUT = OUTPUT_DIR / f"t2-dse_{INPUT_FILE.stem}_values.png"
-PDF_OUTPUT = OUTPUT_DIR / f"t2-dse_{INPUT_FILE.stem}_values.pdf"
+CURRENT_PART = "pd"
+PNG_OUTPUT = OUTPUT_DIR / f"t2-{CURRENT_PART}_{INPUT_FILE.stem}_values.png"
+PDF_OUTPUT = OUTPUT_DIR / f"t2-{CURRENT_PART}_{INPUT_FILE.stem}_values.pdf"
 
 
 def case_label_from_path(path):

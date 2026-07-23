@@ -50,10 +50,11 @@ from style import (
 # Paths
 # ============================================================
 
-INPUT_FILE = Path("graphing/case_study-c4.json")
+INPUT_FILE = Path("graphing/case_study-c3.json")
 OUTPUT_DIR = Path("outputs/t2")
-PNG_OUTPUT = OUTPUT_DIR / f"t2-dse_{INPUT_FILE.stem}.png"
-PDF_OUTPUT = OUTPUT_DIR / f"t2-dse_{INPUT_FILE.stem}.pdf"
+CURRENT_PART = "pd"
+PNG_OUTPUT = OUTPUT_DIR / f"t2-{CURRENT_PART}_{INPUT_FILE.stem}.png"
+PDF_OUTPUT = OUTPUT_DIR / f"t2-{CURRENT_PART}_{INPUT_FILE.stem}.pdf"
 
 
 # ============================================================
@@ -911,7 +912,7 @@ def main():
 
     print(f"Input: {INPUT_FILE}")
     print(f"Saved PNG: {PNG_OUTPUT}")
-    print(f"Saved PDF: {PDF_OUTPUT}")
+    #print(f"Saved PDF: {PDF_OUTPUT}")
 
 
 if __name__ == "__main__":
