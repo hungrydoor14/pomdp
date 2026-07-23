@@ -50,11 +50,12 @@ from style import (
 # Paths
 # ============================================================
 
-INPUT_FILE = Path("graphing/case_study-c3.json")
-OUTPUT_DIR = Path("outputs/t2")
+INPUT_FILE = Path("graphing/case_study-l1.json")
+OUTPUT_DIR = Path("outputs/l1")
 CURRENT_PART = "pd"
-PNG_OUTPUT = OUTPUT_DIR / f"t2-{CURRENT_PART}_{INPUT_FILE.stem}.png"
-PDF_OUTPUT = OUTPUT_DIR / f"t2-{CURRENT_PART}_{INPUT_FILE.stem}.pdf"
+THEOREM = "l1"
+PNG_OUTPUT = OUTPUT_DIR / f"{THEOREM}-{CURRENT_PART}_{INPUT_FILE.stem}.png"
+PDF_OUTPUT = OUTPUT_DIR / f"{THEOREM}-{CURRENT_PART}_{INPUT_FILE.stem}.pdf"
 
 
 # ============================================================
