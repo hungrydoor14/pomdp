@@ -66,6 +66,13 @@ Case 1. It prints the same observed-model case-study sections as Case 1. The
 attacker search is exhaustive over policy rows `(1,0)`, `(0,1)`, and
 `(0.5,0.5)`.
 
+`find_t2_dse_pd_fail_teachable_case.py`
+
+Searches for the nominally missing quadrant where T2-DSE and T2-PD both fail
+but direct policy-tree enumeration says that the target is strictly teachable.
+Under the current two-period T2-PD definition this is a consistency diagnostic:
+the PD margin equals the direct teachability margin, so no witness is expected.
+
 `plot_inducible_observed_model_diagnostics.py`
 
 Produces the older diagnostic plots for the inducible observed-model case.
