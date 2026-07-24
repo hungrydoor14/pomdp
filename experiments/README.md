@@ -26,13 +26,23 @@ Searches for cases where one fixed open-loop sequence is preferred.
 Searches for local-neighbor and root-deviation patterns in two-period policy
 trees.
 
-`find_t2_pd_passes_t2_dse_fails_case.py`
+`find_t2_l1_certifies_t2_dse_fails_case.py`
 
-Searches for a fixed-target example where the policy-dependent two-period
-condition passes in the learner's induced model while the pointwise T2-DSE
-condition fails. It reports all eight policy-tree values, the optimal
-continuation after each first-period action, both T2-PD margins, and the
-hidden-state witness responsible for the T2-DSE failure.
+Reproduces the seed-140 example used to illustrate Lemma 1 while the
+pointwise T2-DSE condition fails. Its default target is the stationary tree
+`(a1, a1, a1)`, and it writes `graphing/case_study-l1.json`.
+
+`find_t2_pd_certifies_t2_dse_fails_case.py`
+
+Searches for the history-dependent target used by Case 3, certified by T2-PD
+while the pointwise T2-DSE condition fails. Its default target is
+`(a1, a0, a1)`, and it writes `graphing/case_study-c3.json`.
+
+`t2_policy_dependent_case_search.py`
+
+Shared exhaustive-search and reporting implementation used by both entry
+points. It checks the 81 attacker policies whose rows are `(1,0)`, `(0,1)`,
+or `(0.5,0.5)`.
 
 `find_t2_dse_inducible_observed_model_case.py`
 

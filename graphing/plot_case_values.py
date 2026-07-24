@@ -23,8 +23,8 @@ from style import (
 )
 
 
-INPUT_FILE = Path("graphing/case_study-c1.json")
-OUTPUT_DIR = Path("outputs/l1")
+INPUT_FILE = Path("graphing/case_study-c3.json")
+OUTPUT_DIR = Path("outputs/t2")
 THEOREM = "t2"
 CURRENT_PART = "pd"
 PNG_OUTPUT = OUTPUT_DIR / f"{THEOREM}-{CURRENT_PART}_{INPUT_FILE.stem}_values.png"

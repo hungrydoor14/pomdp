@@ -605,9 +605,15 @@ def print_optimal_continuations(
     print()
 
 
-def print_full_attacker_case(case: AttackerCase3, output_json: Path) -> None:
+def print_full_attacker_case(
+    case: AttackerCase3,
+    output_json: Path,
+    *,
+    report_title: str,
+    certificate_label: str,
+) -> None:
     original_b = prior_b_vector()
-    print("=== T2-PD passes / T2-DSE fails after restricted attack ===")
+    print(f"=== {report_title} ===")
     print(f"seed: {case.seed}")
     print(f"action control: {case.control:.2f}")
     print(f"observation information: {case.obs_info:.2f}")
@@ -642,7 +648,7 @@ def print_full_attacker_case(case: AttackerCase3, output_json: Path) -> None:
     print_optimal_continuations("original", case.original_evaluations)
     print_optimal_continuations("attacked", case.attacked_evaluations)
 
-    print("T2-PD after attack:")
+    print(f"{certificate_label} after attack:")
     for s1, evaluation in enumerate(case.attacked_evaluations):
         print(f"  initial s1={s1}")
         print(
@@ -707,7 +713,11 @@ def print_full_attacker_case(case: AttackerCase3, output_json: Path) -> None:
     print(f"saved JSON: {output_json}")
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(
+    *,
+    default_target: Tree,
+    default_output_json: Path,
+) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
             "Find a fixed-target example where T2-PD passes in the induced "
@@ -716,21 +726,45 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--max-seed", type=int, default=500)
     parser.add_argument("--initial-match", type=float, default=0.70)
-    parser.add_argument("--target-root", type=int, choices=(0, 1), default=1)
-    parser.add_argument("--target-after-0", type=int, choices=(0, 1), default=1)
-    parser.add_argument("--target-after-1", type=int, choices=(0, 1), default=1)
+    parser.add_argument(
+        "--target-root",
+        type=int,
+        choices=(0, 1),
+        default=default_target[0],
+    )
+    parser.add_argument(
+        "--target-after-0",
+        type=int,
+        choices=(0, 1),
+        default=default_target[1][0],
+    )
+    parser.add_argument(
+        "--target-after-1",
+        type=int,
+        choices=(0, 1),
+        default=default_target[1][1],
+    )
     parser.add_argument("--min-pd-margin", type=float, default=0.05)
     parser.add_argument("--min-dse-failure", type=float, default=0.05)
     parser.add_argument(
         "--output-json",
         type=Path,
-        default=Path("graphing/case_study-c3.json"),
+        default=default_output_json,
     )
     return parser.parse_args()
 
 
-def main() -> None:
-    args = parse_args()
+def main(
+    *,
+    default_target: Tree = (1, (1, 1)),
+    default_output_json: Path = Path("graphing/case_study-c3.json"),
+    report_title: str = "T2-PD certifies / T2-DSE fails after restricted attack",
+    certificate_label: str = "T2-PD",
+) -> None:
+    args = parse_args(
+        default_target=default_target,
+        default_output_json=default_output_json,
+    )
     target_tree: Tree = (
         args.target_root,
         (args.target_after_0, args.target_after_1),
@@ -753,7 +787,12 @@ def main() -> None:
         )
 
     write_case_json(case, args.output_json)
-    print_full_attacker_case(case, args.output_json)
+    print_full_attacker_case(
+        case,
+        args.output_json,
+        report_title=report_title,
+        certificate_label=certificate_label,
+    )
 
 
 if __name__ == "__main__":

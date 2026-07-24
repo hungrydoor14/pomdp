@@ -1,0 +1,117 @@
+=== T2-PD certifies / T2-DSE fails after restricted attack ===
+seed: 116
+action control: 0.85
+observation information: 0.95
+initial match probability: 0.70
+target tree: (a1, pi2(s1'=0)=a0, pi2(s1'=1)=a1)
+initial observed states checked: s1=0, s1=1
+allowed attacker rows: (1,0), (0,1), (0.5,0.5)
+policies checked per instance: 81
+
+rewards R(s1,s2,a):
+s1  s2       a0       a1
+ 0   0    -0.648   +0.032
+ 0   1    +0.965   -1.676
+ 1   0    -0.106   +1.317
+ 1   1    +0.497   -0.897
+
+original policy-tree values in the induced observed model:
+  initial s1=0
+  root  continuation(s1'=0,s1'=1)      value
+   a0        (a0,a0)              -0.235600
+   a0        (a0,a1)              -0.332069
+   a0        (a1,a0)              -0.480495
+   a0        (a1,a1)              -0.576964
+   a1        (a0,a0)              -0.264500
+   a1        (a0,a1)              -0.689486  target
+   a1        (a1,a0)              -0.320090
+   a1        (a1,a1)              -0.745076
+
+  initial s1=1
+  root  continuation(s1'=0,s1'=1)      value
+   a0        (a0,a0)              +0.244600
+   a0        (a0,a1)              +0.148131
+   a0        (a1,a0)              -0.000295
+   a0        (a1,a1)              -0.096764
+   a1        (a0,a0)              -0.016900
+   a1        (a0,a1)              -0.441886  target
+   a1        (a1,a0)              -0.072490
+   a1        (a1,a1)              -0.497476
+
+attacked policy-tree values in the induced observed model:
+  initial s1=0
+  root  continuation(s1'=0,s1'=1)      value
+   a0        (a0,a0)              -1.062366
+   a0        (a0,a1)              -0.918251
+   a0        (a1,a0)              -1.858295
+   a0        (a1,a1)              -1.714180
+   a1        (a0,a0)              -1.405084
+   a1        (a0,a1)              -0.770199  target
+   a1        (a1,a0)              -1.585755
+   a1        (a1,a1)              -0.950870
+
+  initial s1=1
+  root  continuation(s1'=0,s1'=1)      value
+   a0        (a0,a0)              +0.082634
+   a0        (a0,a1)              +0.226749
+   a0        (a1,a0)              -0.713295
+   a0        (a1,a1)              -0.569180
+   a1        (a0,a0)              +1.587916
+   a1        (a0,a1)              +2.222801  target
+   a1        (a1,a0)              +1.407245
+   a1        (a1,a1)              +2.042130
+
+optimal continuation(s), original model:
+  initial s1=0
+    after root a0: (a0, pi2(s1'=0)=a0, pi2(s1'=1)=a0)
+    after root a1: (a1, pi2(s1'=0)=a0, pi2(s1'=1)=a0)
+  initial s1=1
+    after root a0: (a0, pi2(s1'=0)=a0, pi2(s1'=1)=a0)
+    after root a1: (a1, pi2(s1'=0)=a0, pi2(s1'=1)=a0)
+
+optimal continuation(s), attacked model:
+  initial s1=0
+    after root a0: (a0, pi2(s1'=0)=a0, pi2(s1'=1)=a1)
+    after root a1: (a1, pi2(s1'=0)=a0, pi2(s1'=1)=a1)
+  initial s1=1
+    after root a0: (a0, pi2(s1'=0)=a0, pi2(s1'=1)=a1)
+    after root a1: (a1, pi2(s1'=0)=a0, pi2(s1'=1)=a1)
+
+T2-PD after attack:
+  initial s1=0
+    unique target-continuation margin: +0.180671
+    competing-root margin: +0.148053
+    overall margin: +0.148053
+    result: PASSES
+  initial s1=1
+    unique target-continuation margin: +0.180671
+    competing-root margin: +1.996052
+    overall margin: +0.180671
+    result: PASSES
+
+T2-DSE pointwise test:
+  worst margin: -3.444097
+  witness hidden state: (s1,s2)=(0,1)
+  witness tree: (a0, pi2(s1'=0)=a1, pi2(s1'=1)=a0)
+  target/witness values at that hidden state: -2.403489 / +1.040608
+  result: FAILS
+
+hidden-state mixtures P(S2=1 | S1=s1,A=a):
+s1  action   original   attacked
+ 0     a0     0.300000   0.000000
+ 0     a1     0.300000   1.000000
+ 1     a0     0.700000   1.000000
+ 1     a1     0.700000   0.000000
+
+observed transitions (unchanged by this attack):
+action  P(next_S1=0)  P(next_S1=1)
+  a0       0.815000          0.185000
+  a1       0.185000          0.815000
+
+attacker policy pi_dagger(a1 | s1,s2):
+  00: 0.0
+  01: 1.0
+  10: 1.0
+  11: 0.0
+
+saved JSON: graphing/case_study-c3.json
