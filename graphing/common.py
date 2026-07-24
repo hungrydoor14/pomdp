@@ -400,6 +400,7 @@ def normalize_meta(meta):
 
     for key in (
         "control",
+        "discount",
         "obs_info",
         "hidden_effect",
         "action_control",

@@ -1,5 +1,6 @@
 # meta
 seed 5
+discount 0.95
 control 1.00
 obs_info 0.70
 target a1 a1

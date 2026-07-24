@@ -1,5 +1,6 @@
 === T2-PD passes / T2-DSE fails after restricted attack ===
 seed: 140
+discount factor: 0.95
 action control: 0.95
 observation information: 0.70
 initial match probability: 0.70

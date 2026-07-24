@@ -6,7 +6,7 @@ relaxed b in [0,1]^4: 2850
 Bayes-plausible inducible b: 2461
 
 === T2-DSE case study: what the learner would learn ===
-Selected instance: seed=30 control=0.70 obs=0.70 target=(a1,a1)
+Selected instance: seed=30 discount=0.95 control=0.70 obs=0.70 target=(a1,a1)
 Selection rule: strongest inducible case where attack changes an observed-only T*.
 inducible feasible: True
 inducible margin: +1.8542

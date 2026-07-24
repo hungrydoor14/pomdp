@@ -1,6 +1,7 @@
 {
   "meta": {
     "seed": 5,
+    "discount": 0.95,
     "control": 1.0,
     "obs_info": 0.7,
     "target": [

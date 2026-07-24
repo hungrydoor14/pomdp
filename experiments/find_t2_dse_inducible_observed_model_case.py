@@ -317,6 +317,7 @@ def print_t2_dse_case_study(pomdp, row):
     print("=== T2-DSE case study: what the learner would learn ===")
     print(
         f"Selected instance: seed={row['seed']} "
+        f"discount={pomdp.discount:.2f} "
         f"control={row['action_control']:.2f} obs={row['obs_info']:.2f} "
         f"target={format_sequence(target)}"
     )

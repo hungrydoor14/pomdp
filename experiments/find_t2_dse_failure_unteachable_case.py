@@ -201,6 +201,7 @@ def print_case(case: Case4) -> None:
 
     print("# meta")
     print(f"seed {case.seed}")
+    print(f"discount {case.pomdp.discount:.2f}")
     print(f"control {case.control:.2f}")
     print(f"obs_info {case.obs_info:.2f}")
     print(f"target a{case.target[0]} a{case.target[1]}")

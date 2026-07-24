@@ -1,5 +1,5 @@
 === Transition-mislearning case ===
-seed=0 hidden_effect=0.95 action_effect=0.00 action_control=0.75
+seed=0 discount=0.95 hidden_effect=0.95 action_effect=0.00 action_control=0.75
 max observed-transition shift=0.629
 
 Rewards:
@@ -37,4 +37,3 @@ Original open-loop values:
 Attacked open-loop values:
   s1=0: (a0,a0)=+0.456  (a0,a1)=+0.481  (a1,a0)=+0.459  (a1,a1)=+0.951*
   s1=1: (a0,a0)=+0.666  (a0,a1)=+0.873  (a1,a0)=+1.284  (a1,a1)=+1.762*
-

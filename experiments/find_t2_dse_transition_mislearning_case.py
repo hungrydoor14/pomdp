@@ -355,6 +355,7 @@ def print_case(candidate: Candidate) -> None:
     print("=== Transition-mislearning case ===")
     print(
         f"seed={candidate.seed} "
+        f"discount={DISCOUNT:.2f} "
         f"hidden_effect={candidate.hidden_effect:.2f} "
         f"action_effect={candidate.action_effect:.2f} "
         f"action_control={candidate.action_control:.2f}"

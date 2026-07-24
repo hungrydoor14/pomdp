@@ -475,6 +475,7 @@ def build_case_json(case: AttackerCase3) -> dict:
     return {
         "meta": {
             "seed": case.seed,
+            "discount": case.pomdp.discount,
             "control": case.control,
             "obs_info": case.obs_info,
             "target": ["a1", "a1"],
@@ -615,6 +616,7 @@ def print_full_attacker_case(
     original_b = prior_b_vector()
     print(f"=== {report_title} ===")
     print(f"seed: {case.seed}")
+    print(f"discount factor: {case.pomdp.discount:.2f}")
     print(f"action control: {case.control:.2f}")
     print(f"observation information: {case.obs_info:.2f}")
     print("initial match probability: 0.70")

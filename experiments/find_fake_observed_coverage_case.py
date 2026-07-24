@@ -91,6 +91,7 @@ def print_case_file() -> None:
 
     print("# meta")
     print(f"seed {REWARD_SEED}")
+    print(f"discount {DISCOUNT:.2f}")
     print("control 1.00")
     print("obs_info 0.70")
     print("target a1 a1")
