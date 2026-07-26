@@ -1,0 +1,15 @@
+CASE4_UNRESTRICTED_T2_PD
+seed 0
+action_control 0.55
+observation_information 0.55
+target_tree (a1,a1,a1)
+# orientation  optimal_margin  mixtures
+(0,0) -0.02307575  0.00000000 1.00000000 0.00000000 1.00000000
+(0,1) -0.02474300  0.00000000 1.00000000 0.70000000 0.70000000
+(1,0) -0.49516767  0.30000000 0.30000000 0.00000000 1.00000000
+(1,1) -0.49683493  0.30000000 0.30000000 0.70000000 0.70000000
+overall_optimal_margin -0.02307575
+maximizing_orientation (0,0)
+maximizing_mixtures 0.00000000 1.00000000 0.00000000 1.00000000
+target_teachable 0
+verification_passed 1

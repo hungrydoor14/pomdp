@@ -1,5 +1,9 @@
 """Compare restricted-grid and continuous T2-PD attacker searches.
 
+The experiment currently searches targets whose rooted two-period policy tree
+is shared across both initial observed states.  This is a restricted subset of
+the 8^2 complete target policies allowed by the theorem.
+
 The continuous result is the best numerical witness found by differential
 evolution; it is a lower bound on the unrestricted supremum, not a certificate
 of global optimality.  A sign separation is nevertheless conclusive in the
@@ -24,7 +28,7 @@ from find_t2_dse_failure_unteachable_case import (
     allowed_attacker_policies,
     induced_b,
 )
-from t2_policy_dependent_case_search import TREES, evaluate_observed_t2_pd
+from t2_policy_dependent_case_search import Tree, TREES, evaluate_observed_t2_pd
 from two_period_joint_policy_experiments import (
     NUM_ACTIONS,
     NUM_S1,
@@ -41,6 +45,8 @@ class SearchResult:
     margin: float
     attacker: np.ndarray
     induced_mixtures: np.ndarray
+    binding_s1: int
+    binding_tree: Tree
 
 
 def attacker_from_action1_probabilities(probabilities: np.ndarray) -> np.ndarray:
@@ -52,15 +58,28 @@ def attacker_from_action1_probabilities(probabilities: np.ndarray) -> np.ndarray
     return attacker
 
 
-def pd_margin(pomdp, target_tree, attacker: np.ndarray) -> tuple[float, np.ndarray] | None:
+def pd_margin(
+    pomdp,
+    target_tree: Tree,
+    attacker: np.ndarray,
+) -> tuple[float, np.ndarray, int, Tree] | None:
     mixtures = induced_b(attacker)
     if mixtures is None:
         return None
-    margin = min(
-        evaluate_observed_t2_pd(pomdp, mixtures, s1, target_tree).margin
-        for s1 in range(NUM_S1)
+    comparisons = []
+    for s1 in range(NUM_S1):
+        evaluation = evaluate_observed_t2_pd(pomdp, mixtures, s1, target_tree)
+        target_value = evaluation.values[target_tree]
+        comparisons.extend(
+            (target_value - value, s1, tree)
+            for tree, value in evaluation.values.items()
+            if tree != target_tree
+        )
+    margin, binding_s1, binding_tree = min(
+        comparisons,
+        key=lambda comparison: comparison[0],
     )
-    return float(margin), mixtures
+    return float(margin), mixtures, binding_s1, binding_tree
 
 
 def strongest_grid_attack(pomdp, target_tree) -> SearchResult:
@@ -69,11 +88,42 @@ def strongest_grid_attack(pomdp, target_tree) -> SearchResult:
         evaluated = pd_margin(pomdp, target_tree, attacker)
         if evaluated is None:
             continue
-        margin, mixtures = evaluated
+        margin, mixtures, binding_s1, binding_tree = evaluated
         if best is None or margin > best.margin:
-            best = SearchResult(margin, attacker.copy(), mixtures.copy())
+            best = SearchResult(
+                margin,
+                attacker.copy(),
+                mixtures.copy(),
+                binding_s1,
+                binding_tree,
+            )
     if best is None:
         raise RuntimeError("the restricted grid contains no covered attacker")
+    return best
+
+
+def strongest_deterministic_attack(pomdp, target_tree) -> SearchResult:
+    """Return the best covered policy among all 2^4 deterministic attackers."""
+    best: SearchResult | None = None
+    for action1_probabilities in product(
+        (0.0, 1.0),
+        repeat=NUM_S1 * NUM_S2,
+    ):
+        attacker = attacker_from_action1_probabilities(action1_probabilities)
+        evaluated = pd_margin(pomdp, target_tree, attacker)
+        if evaluated is None:
+            continue
+        margin, mixtures, binding_s1, binding_tree = evaluated
+        if best is None or margin > best.margin:
+            best = SearchResult(
+                margin,
+                attacker.copy(),
+                mixtures.copy(),
+                binding_s1,
+                binding_tree,
+            )
+    if best is None:
+        raise RuntimeError("no deterministic attacker has observed coverage")
     return best
 
 
@@ -108,20 +158,26 @@ def strongest_continuous_witness(
     local_result = minimize(
         objective,
         global_result.x,
-        method="Nelder-Mead",
-        options={"maxiter": 2000, "xatol": 1e-10, "fatol": 1e-10},
+        method="Powell",
+        bounds=bounds,
+        options={"maxiter": 2000, "xtol": 1e-10, "ftol": 1e-10},
     )
-    probabilities = np.clip(
-        local_result.x if local_result.fun <= global_result.fun else global_result.x,
-        coverage_floor,
-        1.0 - coverage_floor,
-    )
+    if local_result.success and local_result.fun <= global_result.fun:
+        probabilities = local_result.x
+    else:
+        probabilities = global_result.x
     attacker = attacker_from_action1_probabilities(probabilities)
     evaluated = pd_margin(pomdp, target_tree, attacker)
     if evaluated is None:
         raise RuntimeError("continuous optimizer returned an uncovered attacker")
-    margin, mixtures = evaluated
-    return SearchResult(margin, attacker, mixtures.copy())
+    margin, mixtures, binding_s1, binding_tree = evaluated
+    return SearchResult(
+        margin=float(margin),
+        attacker=attacker.copy(),
+        induced_mixtures=mixtures.copy(),
+        binding_s1=binding_s1,
+        binding_tree=binding_tree,
+    )
 
 
 def tree_label(tree) -> str:
@@ -130,6 +186,8 @@ def tree_label(tree) -> str:
 
 def print_attacker(label: str, result: SearchResult) -> None:
     print(f"{label}_margin {result.margin:+.9f}")
+    print(f"{label}_binding_s1 {result.binding_s1}")
+    print(f"{label}_binding_tree {tree_label(result.binding_tree)}")
     print(f"{label}_attacker_pi_a1")
     for s1, s2 in product(range(NUM_S1), range(NUM_S2)):
         print(f"  {s1}{s2} {result.attacker[s1, s2, 1]:.9f}")
@@ -149,7 +207,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-seed", type=int, default=25)
     parser.add_argument("--maxiter", type=int, default=120)
     parser.add_argument("--popsize", type=int, default=12)
-    parser.add_argument("--coverage-floor", type=float, default=1e-6)
+    parser.add_argument(
+        "--coverage-floor",
+        type=float,
+        default=0.0,
+        help=(
+            "Optional lower bound on both action probabilities at every full "
+            "state. The default 0 searches the theorem's observed-coverage "
+            "class; positive values impose stronger full-state action support."
+        ),
+    )
+    parser.add_argument("--restarts", type=int, default=3)
     parser.add_argument("--separation-tol", type=float, default=1e-5)
     parser.add_argument("--rng-seed", type=int, default=20260725)
     parser.add_argument(
@@ -164,8 +232,10 @@ def main() -> None:
     args = parse_args()
     if args.max_seed <= 0:
         raise SystemExit("--max-seed must be positive")
-    if not 0.0 < args.coverage_floor < 0.5:
-        raise SystemExit("--coverage-floor must lie strictly between 0 and 0.5")
+    if not 0.0 <= args.coverage_floor < 0.5:
+        raise SystemExit("--coverage-floor must lie between 0 (inclusive) and 0.5")
+    if args.restarts <= 0:
+        raise SystemExit("--restarts must be positive")
 
     tested = 0
     optimized = 0
@@ -187,13 +257,21 @@ def main() -> None:
                 if grid.margin > args.separation_tol:
                     continue
                 optimized += 1
-                continuous = strongest_continuous_witness(
-                    pomdp,
-                    target_tree,
-                    coverage_floor=args.coverage_floor,
-                    maxiter=args.maxiter,
-                    popsize=args.popsize,
-                    rng_seed=args.rng_seed + tested,
+                continuous = max(
+                    (
+                        strongest_continuous_witness(
+                            pomdp,
+                            target_tree,
+                            coverage_floor=args.coverage_floor,
+                            maxiter=args.maxiter,
+                            popsize=args.popsize,
+                            rng_seed=(
+                                args.rng_seed + 10_000 * restart + tested
+                            ),
+                        )
+                        for restart in range(args.restarts)
+                    ),
+                    key=lambda result: result.margin,
                 )
                 gap = continuous.margin - grid.margin
                 if gap > best_gap:
@@ -204,12 +282,20 @@ def main() -> None:
                     grid.margin < -args.separation_tol
                     and continuous.margin > args.separation_tol
                 ):
+                    deterministic = strongest_deterministic_attack(
+                        pomdp,
+                        target_tree,
+                    )
                     print("SIGN_SEPARATION_FOUND")
                     print(f"seed {seed}")
                     print(f"action_control {control:.2f}")
                     print(f"observation_information {obs_info:.2f}")
                     print(f"target_tree {tree_label(target_tree)}")
+                    print(f"coverage_floor {args.coverage_floor:.9f}")
+                    print(f"continuous_restarts {args.restarts}")
+                    print_attacker("deterministic", deterministic)
                     print_attacker("grid", grid)
+                    print("continuous_margin_is_numerical_lower_bound 1")
                     print_attacker("continuous", continuous)
                     print(f"margin_gap {gap:+.9f}")
                     print(f"models_targets_tested {tested}")
@@ -227,7 +313,10 @@ def main() -> None:
         print(f"action_control {control:.2f}")
         print(f"observation_information {obs_info:.2f}")
         print(f"target_tree {tree_label(target_tree)}")
+        print(f"coverage_floor {args.coverage_floor:.9f}")
+        print(f"continuous_restarts {args.restarts}")
         print_attacker("grid", grid)
+        print("continuous_margin_is_numerical_lower_bound 1")
         print_attacker("continuous", continuous)
         print(f"margin_gap {best_gap:+.9f}")
 

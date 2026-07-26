@@ -72,6 +72,27 @@ Verifies that the reduced T2-PD margin—computed from separate same-root and
 optimal-continuation comparisons—equals the margin obtained by direct
 enumeration of every competing two-period policy tree.
 
+`compare_grid_continuous_t2_pd.py`
+
+Compares the best T2-PD teaching margin from the restricted 81-policy grid
+with a continuous four-parameter attacker search, using multiple numerical
+restarts and reporting the binding observed state and competing tree. The
+default continuous domain includes boundary policies and enforces the theorem's
+observed state-action coverage condition; `--coverage-floor` optionally imposes
+the stronger full-state action-support condition. The continuous result is a
+numerical lower bound on the unrestricted supremum. A reported sign separation
+therefore proves that the restricted enumeration missed a positive-margin
+attacker, without claiming that the continuous optimizer found the global
+maximum. The current script searches the restricted target family that uses the
+same rooted tree at both initial observed states.
+
+`verify_case4_unrestricted_t2_pd.py`
+
+Verifies the unrestricted negative T2-PD result for Case 4 by partitioning
+the binary Bayes-plausible mixture space into four linear regions and solving
+the max-margin LP in each region. It checks the reported overall margin and
+maximizing induced mixture collection against the Appendix C.3 values.
+
 `plot_inducible_observed_model_diagnostics.py`
 
 Produces the older diagnostic plots for the inducible observed-model case.
