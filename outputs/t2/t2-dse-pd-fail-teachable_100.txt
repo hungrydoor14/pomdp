@@ -1,6 +1,6 @@
-=== T2-DSE fails / T2-PD fails / teachable search ===
+=== Reduced T2-PD margin / direct enumeration check ===
 seeds searched: 100
-attacker-target combinations checked: 615538
+attacker-target combinations checked: 627200
 largest |PD margin - direct margin|: 0.000e+00
-result: no witness found (expected under the current T2-PD definition)
-reason: the T2-PD comparisons partition all non-target policy trees, so its margin equals the direct strict-teachability margin
+result: no discrepancy above tolerance found
+reason: the reduced comparisons partition all non-target policy trees

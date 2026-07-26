@@ -1,4 +1,4 @@
-"""Check whether T2-PD and direct strict teachability ever disagree."""
+"""Verify that the reduced T2-PD margin equals direct tree enumeration."""
 
 from __future__ import annotations
 
@@ -11,15 +11,35 @@ from t2_policy_dependent_case_search import (
     TREES,
     Tree,
     evaluate_observed_t2_pd,
-    pointwise_t2_dse_witness,
 )
-from two_period_joint_policy_experiments import build_action_dependent_factored_pomdp
+from two_period_joint_policy_experiments import (
+    NUM_ACTIONS,
+    build_action_dependent_factored_pomdp,
+)
 
 
 PARAMETERS = (0.55, 0.70, 0.85, 0.95)
 
 
+def reduced_margin(values: dict[Tree, float], target: Tree) -> float:
+    """Partition competitors into same-root and alternative-root classes."""
+    target_value = values[target]
+    target_root = target[0]
+    same_root = min(
+        target_value - values[tree]
+        for tree in TREES
+        if tree != target and tree[0] == target_root
+    )
+    alternative_roots = min(
+        target_value - max(values[tree] for tree in TREES if tree[0] == root)
+        for root in range(NUM_ACTIONS)
+        if root != target_root
+    )
+    return min(same_root, alternative_roots)
+
+
 def direct_margin(values: dict[Tree, float], target: Tree) -> float:
+    """Compare the target directly with every competing policy tree."""
     return min(
         values[target] - values[competitor]
         for competitor in TREES
@@ -27,7 +47,7 @@ def direct_margin(values: dict[Tree, float], target: Tree) -> float:
     )
 
 
-def run_search(max_seed: int, tolerance: float) -> tuple[int, float, bool]:
+def run_check(max_seed: int, tolerance: float) -> tuple[int, float, bool]:
     checked = 0
     max_discrepancy = 0.0
     found = False
@@ -40,10 +60,6 @@ def run_search(max_seed: int, tolerance: float) -> tuple[int, float, bool]:
                 p_s1_matches_s2=obs_info,
             )
             for target_tree in TREES:
-                dse_margin = pointwise_t2_dse_witness(pomdp, target_tree)[0]
-                if dse_margin > tolerance:
-                    continue
-
                 for attacker in allowed_attacker_policies():
                     attacked_b = induced_b(attacker)
                     if attacked_b is None:
@@ -56,13 +72,17 @@ def run_search(max_seed: int, tolerance: float) -> tuple[int, float, bool]:
                         )
                         for initial_s1 in range(2)
                     ]
-                    pd = min(result.margin for result in evaluations)
+                    reduced = min(
+                        reduced_margin(result.values, target_tree)
+                        for result in evaluations
+                    )
                     direct = min(
                         direct_margin(result.values, target_tree)
                         for result in evaluations
                     )
-                    max_discrepancy = max(max_discrepancy, abs(pd - direct))
-                    found |= pd <= tolerance and direct > tolerance
+                    discrepancy = abs(reduced - direct)
+                    max_discrepancy = max(max_discrepancy, discrepancy)
+                    found |= discrepancy > tolerance
 
     return checked, max_discrepancy, found
 
@@ -70,29 +90,28 @@ def run_search(max_seed: int, tolerance: float) -> tuple[int, float, bool]:
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Look for a case where T2-DSE and T2-PD fail but direct policy-tree "
-            "enumeration says the target is strictly teachable."
+            "Compare the reduced policy-dependent margin with the direct "
+            "strict policy-tree optimality margin."
         )
     )
     parser.add_argument("--max-seed", type=int, default=100)
     parser.add_argument("--tolerance", type=float, default=TOL)
     args = parser.parse_args()
 
-    checked, max_discrepancy, found = run_search(args.max_seed, args.tolerance)
+    checked, max_discrepancy, found = run_check(args.max_seed, args.tolerance)
 
-    print("=== T2-DSE fails / T2-PD fails / teachable search ===")
+    print("=== Reduced T2-PD margin / direct enumeration check ===")
     print(f"seeds searched: {args.max_seed}")
     print(f"attacker-target combinations checked: {checked}")
-    print(f"largest |PD margin - direct margin|: {max_discrepancy:.3e}")
+    print(f"largest |reduced margin - direct margin|: {max_discrepancy:.3e}")
     print(
-        "result: CONTRADICTORY WITNESS FOUND"
+        "result: NUMERICAL DISCREPANCY ABOVE TOLERANCE FOUND"
         if found
-        else "result: no witness found (expected under the current T2-PD definition)"
+        else "result: no discrepancy above tolerance found"
     )
     if not found:
         print(
-            "reason: the T2-PD comparisons partition all non-target policy trees, "
-            "so its margin equals the direct strict-teachability margin"
+            "reason: the reduced comparisons partition all non-target policy trees"
         )
 
 

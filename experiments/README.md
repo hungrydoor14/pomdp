@@ -68,10 +68,9 @@ attacker search is exhaustive over policy rows `(1,0)`, `(0,1)`, and
 
 `find_t2_dse_pd_fail_teachable_case.py`
 
-Searches for the nominally missing quadrant where T2-DSE and T2-PD both fail
-but direct policy-tree enumeration says that the target is strictly teachable.
-Under the current two-period T2-PD definition this is a consistency diagnostic:
-the PD margin equals the direct teachability margin, so no witness is expected.
+Verifies that the reduced T2-PD margin—computed from separate same-root and
+optimal-continuation comparisons—equals the margin obtained by direct
+enumeration of every competing two-period policy tree.
 
 `plot_inducible_observed_model_diagnostics.py`
 
