@@ -93,6 +93,13 @@ the binary Bayes-plausible mixture space into four linear regions and solving
 the max-margin LP in each region. It checks the reported overall margin and
 maximizing induced mixture collection against the Appendix C.3 values.
 
+`t2_c3_epsilon_robustness.py`
+
+Evaluates the full-support relaxation of the Case 3 attacker over
+`epsilon` in `[0,1]`. It reports the largest connected interval from zero
+with a positive T2-PD margin, records changes in the binding observed state
+and competitor tree, and writes the margin curve and plot under `outputs/t2/`.
+
 `plot_inducible_observed_model_diagnostics.py`
 
 Produces the older diagnostic plots for the inducible observed-model case.

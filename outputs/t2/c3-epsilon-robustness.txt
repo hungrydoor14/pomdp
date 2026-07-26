@@ -1,0 +1,13 @@
+CASE3_EPSILON_ROBUSTNESS
+seed 116
+action_control 0.85
+observation_information 0.95
+target_tree (a1,a0,a1)
+epsilon_zero_margin +0.148052500000
+epsilon_one_margin -0.686486125000
+positive_connected_threshold 0.444577401222
+binding_changes 2
+# epsilon_start epsilon_end binding_s1 binding_tree
+0.000000000 0.413000000 0 (a0,a0,a1)
+0.414000000 0.797000000 0 (a1,a0,a0)
+0.798000000 1.000000000 1 (a0,a0,a0)
