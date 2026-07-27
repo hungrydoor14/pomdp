@@ -1,0 +1,102 @@
+T2_PD_MECHANISM_DECOMPOSITION
+CASE_2_1
+original_margin -0.561518611
+original_binding_s1 0
+original_binding_tree (a0,a0,a1)
+reward_only_margin -0.184947193
+reward_only_binding_s1 0
+reward_only_binding_tree (a0,a0,a1)
+transition_only_margin -0.023395886
+transition_only_binding_s1 1
+transition_only_binding_tree (a1,a0,a1)
+full_attack_margin -0.007705895
+full_attack_binding_s1 1
+full_attack_binding_tree (a1,a0,a1)
+classification unsuccessful
+target_tree (a1,a1,a1)
+case_2_1_uses_exact_generator_values 1
+seed 0
+hidden_effect 0.95
+action_effect 0.00
+action_control 0.75
+JOINT_ONLY_ATTACKER_SEARCH_METADATA
+search_rng_seed 20260726
+max_seed 250
+samples_per_model 250
+margin_tolerance 0.000001000
+paper_witness_margin_threshold 0.050000000
+stop_after_paper_witness 1
+joint_only_search_is_randomized 1
+hybrid_models_are_counterfactual 1
+same_target_tree_used_for_both_initial_states 1
+models_tested 3
+mixtures_sampled 750
+target_evaluations 6000
+JOINT_ONLY_ATTACKER_SEARCH
+original_margin -0.165469871
+original_binding_s1 0
+original_binding_tree (a0,a0,a1)
+reward_only_margin -0.005612366
+reward_only_binding_s1 0
+reward_only_binding_tree (a0,a0,a0)
+transition_only_margin -0.120807159
+transition_only_binding_s1 0
+transition_only_binding_tree (a0,a0,a1)
+full_attack_margin +0.053051509
+full_attack_binding_s1 1
+full_attack_binding_tree (a1,a1,a0)
+classification joint-only
+joint_only_found 1
+seed 0
+hidden_effect 0.75
+action_effect 0.20
+action_control 0.75
+transition_generator make_hidden_dependent_transition
+transition_shape 2 2 2 2 2
+target_tree (a1,a0,a0)
+original_mixtures 0.300000000 0.300000000 0.700000000 0.700000000
+attacked_mixtures 0.137265846 0.329824317 0.747962089 0.653812236
+attacker_reconstruction_verified 1
+# attacker: s1 s2 pi(a1|s1,s2)
+0 0 0.809108396
+0 1 0.929132174
+1 0 0.587853221
+1 1 0.475809870
+# rewards: s1 s2 R(a0) R(a1)
+0 0 +0.125730221 -0.132104863
+0 1 +0.640422650 +0.104900117
+1 0 -0.535669373 +0.361595055
+1 1 +1.304000045 +0.947080963
+# transitions: action s1 s2 next_s1 next_s2 probability
+0 0 0 0 0 0.712500000
+0 0 0 0 1 0.237500000
+0 0 0 1 0 0.037500000
+0 0 0 1 1 0.012500000
+0 0 1 0 0 0.337500000
+0 0 1 0 1 0.112500000
+0 0 1 1 0 0.412500000
+0 0 1 1 1 0.137500000
+0 1 0 0 0 0.712500000
+0 1 0 0 1 0.237500000
+0 1 0 1 0 0.037500000
+0 1 0 1 1 0.012500000
+0 1 1 0 0 0.337500000
+0 1 1 0 1 0.112500000
+0 1 1 1 0 0.412500000
+0 1 1 1 1 0.137500000
+1 0 0 0 0 0.137500000
+1 0 0 0 1 0.412500000
+1 0 0 1 0 0.112500000
+1 0 0 1 1 0.337500000
+1 0 1 0 0 0.012500000
+1 0 1 0 1 0.037500000
+1 0 1 1 0 0.237500000
+1 0 1 1 1 0.712500000
+1 1 0 0 0 0.137500000
+1 1 0 0 1 0.412500000
+1 1 0 1 0 0.112500000
+1 1 0 1 1 0.337500000
+1 1 1 0 0 0.012500000
+1 1 1 0 1 0.037500000
+1 1 1 1 0 0.237500000
+1 1 1 1 1 0.712500000

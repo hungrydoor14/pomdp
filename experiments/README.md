@@ -100,6 +100,22 @@ Evaluates the full-support relaxation of the Case 3 attacker over
 with a positive T2-PD margin, records changes in the binding observed state
 and competitor tree, and writes the margin curve and plot under `outputs/t2/`.
 
+`decompose_t2_pd_mechanisms.py`
+
+Evaluates the T2-PD margin under the original, counterfactual reward-only,
+counterfactual transition-only, and full attacked models. It reconstructs
+Case 2.1 from its exact generator values and performs a seeded randomized
+search over behaviorally inducible mixture collections for a joint-only
+attacker witness. Each sampled collection is converted into a concrete
+attacker policy, reconstructed from that policy, and only then evaluated.
+The report includes the binding observed state and
+competing rooted tree for every model. The search uses the restricted target
+family in which the same rooted tree is evaluated at both initial states. By
+default it retains the best witness over the configured search; use
+`--stop-after-paper-witness` to stop once the requested substantive margin
+threshold is reached. Each reported mixture witness is converted back into an
+attacker policy and checked by reconstructing its induced mixtures.
+
 `plot_inducible_observed_model_diagnostics.py`
 
 Produces the older diagnostic plots for the inducible observed-model case.
